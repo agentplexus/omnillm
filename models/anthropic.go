@@ -4,13 +4,20 @@ package models
 const (
 	// AnthropicModelsURL is the official Anthropic models documentation page.
 	// Use this to check for new models, deprecations, and model updates.
-	AnthropicModelsURL = "https://docs.anthropic.com/en/docs/about-claude/models"
+	AnthropicModelsURL = "https://platform.claude.com/docs/en/about-claude/models/overview"
 
 	// AnthropicAPIURL is the Anthropic API reference page.
 	AnthropicAPIURL = "https://docs.anthropic.com/en/api"
 )
 
-// Claude Opus 4 Family (Latest - May 2025)
+// Claude 4.5 Family (Latest)
+const (
+	ClaudeOpus4_5   = "claude-opus-4-5-20251101"   // Claude Opus 4.5 (November 2025)
+	ClaudeSonnet4_5 = "claude-sonnet-4-5-20250929" // Claude Sonnet 4.5 (September 2025)
+	ClaudeHaiku4_5  = "claude-haiku-4-5-20251001"  // Claude Haiku 4.5 (October 2025)
+)
+
+// Claude Opus 4 Family
 const (
 	ClaudeOpus4_1 = "claude-opus-4-1-20250805" // Claude Opus 4.1 (August 2025)
 	ClaudeOpus4   = "claude-opus-4-20250514"   // Claude Opus 4 (May 2025)

@@ -29,8 +29,13 @@ type ClientConfig struct {
 	BaseURL  string
 	Region   string // For AWS Bedrock
 
+	// Timeout sets the HTTP client timeout for API calls.
+	// If zero, providers use their default timeouts.
+	// Recommended: 300 * time.Second for reasoning models.
+	Timeout time.Duration
+
 	// HTTPClient is an optional HTTP client with custom transport (e.g., retry transport).
-	// If nil, providers will use their default clients.
+	// If nil, providers will create clients using the Timeout value above.
 	// This can be used to add retry logic, tracing, or other middleware.
 	// Example with retry:
 	//   rt := retryhttp.NewWithOptions(retryhttp.WithMaxRetries(3))
