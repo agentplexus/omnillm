@@ -2,9 +2,38 @@
   "ir_version": "1.0",
   "project": "omnillm",
   "repository": "https://github.com/agentplexus/omnillm",
-  "generated_at": "2026-01-04T00:00:00Z",
+  "generated_at": "2026-01-10T00:00:00Z",
   "unreleased": {},
   "releases": [
+    {
+      "version": "0.11.0",
+      "date": "2026-01-10",
+      "added": [
+        {
+          "description": "`TopK` sampling parameter in `ChatCompletionRequest` (Anthropic, Gemini, Ollama)"
+        },
+        {
+          "description": "`Seed` parameter for reproducible outputs (OpenAI, X.AI, Ollama)"
+        },
+        {
+          "description": "`N` parameter for multiple completions (OpenAI)"
+        },
+        {
+          "description": "`ResponseFormat` type and field for JSON mode responses (OpenAI, Gemini)"
+        },
+        {
+          "description": "`Logprobs` and `TopLogprobs` parameters for log probability output (OpenAI)"
+        }
+      ],
+      "changed": [
+        {
+          "description": "All provider adapters updated to pass through newly supported parameters"
+        },
+        {
+          "description": "ROADMAP.md updated with extended sampling parameters marked as complete"
+        }
+      ]
+    },
     {
       "version": "0.10.0",
       "date": "2026-01-04",
