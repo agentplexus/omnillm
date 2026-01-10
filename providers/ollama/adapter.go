@@ -34,11 +34,13 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 	}
 
 	// Set options if provided
-	if req.MaxTokens != nil || req.Temperature != nil || req.TopP != nil || len(req.Stop) > 0 {
+	if req.MaxTokens != nil || req.Temperature != nil || req.TopP != nil || req.TopK != nil || req.Seed != nil || len(req.Stop) > 0 {
 		ollamaReq.Options = &Options{
 			Temperature: req.Temperature,
 			TopP:        req.TopP,
+			TopK:        req.TopK,
 			Stop:        req.Stop,
+			Seed:        req.Seed,
 		}
 		if req.MaxTokens != nil {
 			ollamaReq.Options.NumPredict = req.MaxTokens
@@ -96,11 +98,13 @@ func (p *Provider) CreateChatCompletionStream(ctx context.Context, req *provider
 	}
 
 	// Set options if provided
-	if req.MaxTokens != nil || req.Temperature != nil || req.TopP != nil || len(req.Stop) > 0 {
+	if req.MaxTokens != nil || req.Temperature != nil || req.TopP != nil || req.TopK != nil || req.Seed != nil || len(req.Stop) > 0 {
 		ollamaReq.Options = &Options{
 			Temperature: req.Temperature,
 			TopP:        req.TopP,
+			TopK:        req.TopK,
 			Stop:        req.Stop,
+			Seed:        req.Seed,
 		}
 		if req.MaxTokens != nil {
 			ollamaReq.Options.NumPredict = req.MaxTokens

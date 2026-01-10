@@ -19,8 +19,10 @@ type Request struct {
 type Options struct {
 	Temperature *float64 `json:"temperature,omitempty"`
 	TopP        *float64 `json:"top_p,omitempty"`
+	TopK        *int     `json:"top_k,omitempty"`
 	NumPredict  *int     `json:"num_predict,omitempty"` // Ollama's equivalent to max_tokens
 	Stop        []string `json:"stop,omitempty"`
+	Seed        *int     `json:"seed,omitempty"`
 }
 
 // Response represents an Ollama chat completion response

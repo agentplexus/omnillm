@@ -11,6 +11,7 @@ type Request struct {
 	Stop             []string  `json:"stop,omitempty"`
 	PresencePenalty  *float64  `json:"presence_penalty,omitempty"`
 	FrequencyPenalty *float64  `json:"frequency_penalty,omitempty"`
+	Seed             *int      `json:"seed,omitempty"`
 }
 
 // Message represents a message in X.AI format (OpenAI-compatible)

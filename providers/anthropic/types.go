@@ -8,6 +8,7 @@ type Request struct {
 	System      string    `json:"system,omitempty"`
 	Temperature *float64  `json:"temperature,omitempty"`
 	TopP        *float64  `json:"top_p,omitempty"`
+	TopK        *int      `json:"top_k,omitempty"`
 	Stream      *bool     `json:"stream,omitempty"`
 }
 

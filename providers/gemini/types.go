@@ -2,17 +2,24 @@ package gemini
 
 // Request represents a Gemini chat completion request
 type Request struct {
-	Model            string         `json:"model"`
-	Messages         []Message      `json:"messages"`
-	MaxTokens        *int           `json:"max_tokens,omitempty"`
-	Temperature      *float64       `json:"temperature,omitempty"`
-	TopP             *float64       `json:"top_p,omitempty"`
-	Stream           *bool          `json:"stream,omitempty"`
-	Stop             []string       `json:"stop,omitempty"`
-	PresencePenalty  *float64       `json:"presence_penalty,omitempty"`
-	FrequencyPenalty *float64       `json:"frequency_penalty,omitempty"`
-	LogitBias        map[string]int `json:"logit_bias,omitempty"`
-	User             *string        `json:"user,omitempty"`
+	Model            string          `json:"model"`
+	Messages         []Message       `json:"messages"`
+	MaxTokens        *int            `json:"max_tokens,omitempty"`
+	Temperature      *float64        `json:"temperature,omitempty"`
+	TopP             *float64        `json:"top_p,omitempty"`
+	TopK             *int            `json:"top_k,omitempty"`
+	Stream           *bool           `json:"stream,omitempty"`
+	Stop             []string        `json:"stop,omitempty"`
+	PresencePenalty  *float64        `json:"presence_penalty,omitempty"`
+	FrequencyPenalty *float64        `json:"frequency_penalty,omitempty"`
+	LogitBias        map[string]int  `json:"logit_bias,omitempty"`
+	User             *string         `json:"user,omitempty"`
+	ResponseFormat   *ResponseFormat `json:"response_format,omitempty"`
+}
+
+// ResponseFormat specifies the format of the response
+type ResponseFormat struct {
+	Type string `json:"type"` // "text" or "json_object"
 }
 
 // Message represents a chat message

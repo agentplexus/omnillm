@@ -41,7 +41,15 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 		MaxTokens:   req.MaxTokens,
 		Temperature: req.Temperature,
 		TopP:        req.TopP,
+		TopK:        req.TopK,
 		Stop:        req.Stop,
+	}
+
+	// Convert response format if provided
+	if req.ResponseFormat != nil {
+		geminiReq.ResponseFormat = &ResponseFormat{
+			Type: req.ResponseFormat.Type,
+		}
 	}
 
 	// Convert messages
@@ -96,7 +104,15 @@ func (p *Provider) CreateChatCompletionStream(ctx context.Context, req *provider
 		MaxTokens:   req.MaxTokens,
 		Temperature: req.Temperature,
 		TopP:        req.TopP,
+		TopK:        req.TopK,
 		Stop:        req.Stop,
+	}
+
+	// Convert response format if provided
+	if req.ResponseFormat != nil {
+		geminiReq.ResponseFormat = &ResponseFormat{
+			Type: req.ResponseFormat.Type,
+		}
 	}
 
 	// Convert messages

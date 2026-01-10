@@ -28,11 +28,26 @@ func (p *Provider) Name() string {
 func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatCompletionRequest) (*provider.ChatCompletionResponse, error) {
 	// Convert from unified format to OpenAI format
 	openaiReq := &Request{
-		Model:       req.Model,
-		MaxTokens:   req.MaxTokens,
-		Temperature: req.Temperature,
-		TopP:        req.TopP,
-		Stop:        req.Stop,
+		Model:            req.Model,
+		MaxTokens:        req.MaxTokens,
+		Temperature:      req.Temperature,
+		TopP:             req.TopP,
+		Stop:             req.Stop,
+		PresencePenalty:  req.PresencePenalty,
+		FrequencyPenalty: req.FrequencyPenalty,
+		LogitBias:        req.LogitBias,
+		User:             req.User,
+		Seed:             req.Seed,
+		N:                req.N,
+		Logprobs:         req.Logprobs,
+		TopLogprobs:      req.TopLogprobs,
+	}
+
+	// Convert response format if provided
+	if req.ResponseFormat != nil {
+		openaiReq.ResponseFormat = &ResponseFormat{
+			Type: req.ResponseFormat.Type,
+		}
 	}
 
 	// Convert messages
@@ -77,11 +92,26 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 func (p *Provider) CreateChatCompletionStream(ctx context.Context, req *provider.ChatCompletionRequest) (provider.ChatCompletionStream, error) {
 	// Convert from unified format to OpenAI format
 	openaiReq := &Request{
-		Model:       req.Model,
-		MaxTokens:   req.MaxTokens,
-		Temperature: req.Temperature,
-		TopP:        req.TopP,
-		Stop:        req.Stop,
+		Model:            req.Model,
+		MaxTokens:        req.MaxTokens,
+		Temperature:      req.Temperature,
+		TopP:             req.TopP,
+		Stop:             req.Stop,
+		PresencePenalty:  req.PresencePenalty,
+		FrequencyPenalty: req.FrequencyPenalty,
+		LogitBias:        req.LogitBias,
+		User:             req.User,
+		Seed:             req.Seed,
+		N:                req.N,
+		Logprobs:         req.Logprobs,
+		TopLogprobs:      req.TopLogprobs,
+	}
+
+	// Convert response format if provided
+	if req.ResponseFormat != nil {
+		openaiReq.ResponseFormat = &ResponseFormat{
+			Type: req.ResponseFormat.Type,
+		}
 	}
 
 	// Convert messages

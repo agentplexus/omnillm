@@ -33,6 +33,7 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 		MaxTokens:   4096, // Default
 		Temperature: req.Temperature,
 		TopP:        req.TopP,
+		TopK:        req.TopK,
 	}
 
 	if req.MaxTokens != nil {
@@ -108,6 +109,7 @@ func (p *Provider) CreateChatCompletionStream(ctx context.Context, req *provider
 		MaxTokens:   4096, // Default
 		Temperature: req.Temperature,
 		TopP:        req.TopP,
+		TopK:        req.TopK,
 	}
 
 	if req.MaxTokens != nil {

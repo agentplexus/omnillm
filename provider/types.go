@@ -34,19 +34,30 @@ type ToolFunction struct {
 
 // ChatCompletionRequest represents a request for chat completion
 type ChatCompletionRequest struct {
-	Model            string         `json:"model"`
-	Messages         []Message      `json:"messages"`
-	MaxTokens        *int           `json:"max_tokens,omitempty"`
-	Temperature      *float64       `json:"temperature,omitempty"`
-	TopP             *float64       `json:"top_p,omitempty"`
-	Stream           *bool          `json:"stream,omitempty"`
-	Stop             []string       `json:"stop,omitempty"`
-	PresencePenalty  *float64       `json:"presence_penalty,omitempty"`
-	FrequencyPenalty *float64       `json:"frequency_penalty,omitempty"`
-	LogitBias        map[string]int `json:"logit_bias,omitempty"`
-	User             *string        `json:"user,omitempty"`
-	Tools            []Tool         `json:"tools,omitempty"`
-	ToolChoice       any            `json:"tool_choice,omitempty"`
+	Model            string          `json:"model"`
+	Messages         []Message       `json:"messages"`
+	MaxTokens        *int            `json:"max_tokens,omitempty"`
+	Temperature      *float64        `json:"temperature,omitempty"`
+	TopP             *float64        `json:"top_p,omitempty"`
+	TopK             *int            `json:"top_k,omitempty"` // Anthropic, Gemini, Ollama
+	Stream           *bool           `json:"stream,omitempty"`
+	Stop             []string        `json:"stop,omitempty"`
+	PresencePenalty  *float64        `json:"presence_penalty,omitempty"`
+	FrequencyPenalty *float64        `json:"frequency_penalty,omitempty"`
+	LogitBias        map[string]int  `json:"logit_bias,omitempty"`
+	User             *string         `json:"user,omitempty"`
+	Tools            []Tool          `json:"tools,omitempty"`
+	ToolChoice       any             `json:"tool_choice,omitempty"`
+	Seed             *int            `json:"seed,omitempty"`            // OpenAI, X.AI - for reproducible outputs
+	N                *int            `json:"n,omitempty"`               // OpenAI - number of completions
+	ResponseFormat   *ResponseFormat `json:"response_format,omitempty"` // OpenAI, Gemini - JSON mode
+	Logprobs         *bool           `json:"logprobs,omitempty"`        // OpenAI - return log probabilities
+	TopLogprobs      *int            `json:"top_logprobs,omitempty"`    // OpenAI - number of top logprobs
+}
+
+// ResponseFormat specifies the format of the response
+type ResponseFormat struct {
+	Type string `json:"type"` // "text" or "json_object"
 }
 
 // Tool represents a tool that can be called
