@@ -16,10 +16,13 @@ import (
 
 // ChatClient is the main client interface that wraps a Provider
 type ChatClient struct {
-	provider provider.Provider
-	memory   *MemoryManager
-	hook     ObservabilityHook
-	logger   *slog.Logger
+	provider       provider.Provider
+	memory         *MemoryManager
+	cache          *CacheManager
+	tokenEstimator TokenEstimator
+	validateTokens bool
+	hook           ObservabilityHook
+	logger         *slog.Logger
 }
 
 // ClientConfig holds configuration for creating a client
@@ -57,12 +60,51 @@ type ClientConfig struct {
 
 	// Provider-specific configurations can be added here
 	Extra map[string]any
+
+	// FallbackProviders is a list of providers to try if the primary provider fails.
+	// Fallback only occurs for retryable errors (rate limits, server errors, network errors).
+	// Auth errors and invalid requests do not trigger fallback.
+	// Example:
+	//   FallbackProviders: []ProviderConfig{
+	//       {Provider: ProviderNameAnthropic, APIKey: "..."},
+	//   }
+	FallbackProviders []ProviderConfig
+
+	// CircuitBreakerConfig configures circuit breaker behavior for fallback providers.
+	// If nil (default), circuit breaker is disabled.
+	// When enabled, providers that fail repeatedly are temporarily skipped.
+	CircuitBreakerConfig *CircuitBreakerConfig
+
+	// TokenEstimator enables pre-flight token estimation (optional).
+	// Use NewTokenEstimator() to create one with custom configuration.
+	TokenEstimator TokenEstimator
+
+	// ValidateTokens enables automatic token validation before requests.
+	// When true and TokenEstimator is set, requests that would exceed
+	// the model's context window are rejected with TokenLimitError.
+	// Default: false
+	ValidateTokens bool
+
+	// Cache is the KVS client for response caching (optional).
+	// If provided, identical requests will return cached responses.
+	// Uses the same kvs.Client interface as Memory.
+	Cache kvs.Client
+
+	// CacheConfig configures response caching behavior.
+	// If nil, DefaultCacheConfig() is used when Cache is provided.
+	CacheConfig *CacheConfig
 }
 
 // NewClient creates a new ChatClient based on the provider
 func NewClient(config ClientConfig) (*ChatClient, error) {
 	var prov provider.Provider
 	var err error
+
+	// Initialize logger (default to null logger if not provided)
+	logger := config.Logger
+	if logger == nil {
+		logger = slogutil.Null()
+	}
 
 	// Check for direct provider injection first
 	if config.CustomProvider != nil {
@@ -91,16 +133,30 @@ func NewClient(config ClientConfig) (*ChatClient, error) {
 		}
 	}
 
-	// Initialize logger (default to null logger if not provided)
-	logger := config.Logger
-	if logger == nil {
-		logger = slogutil.Null()
+	// Wrap with fallback provider if configured
+	if len(config.FallbackProviders) > 0 {
+		fallbacks := make([]provider.Provider, 0, len(config.FallbackProviders))
+		for i, fbConfig := range config.FallbackProviders {
+			fb, err := buildProviderFromConfig(fbConfig)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create fallback provider %d (%s): %w",
+					i, fbConfig.Provider, err)
+			}
+			fallbacks = append(fallbacks, fb)
+		}
+
+		prov = NewFallbackProvider(prov, fallbacks, &FallbackProviderConfig{
+			CircuitBreakerConfig: config.CircuitBreakerConfig,
+			Logger:               logger,
+		})
 	}
 
 	client := &ChatClient{
-		provider: prov,
-		hook:     config.ObservabilityHook,
-		logger:   logger,
+		provider:       prov,
+		tokenEstimator: config.TokenEstimator,
+		validateTokens: config.ValidateTokens,
+		hook:           config.ObservabilityHook,
+		logger:         logger,
 	}
 
 	// Initialize memory if provided
@@ -112,11 +168,56 @@ func NewClient(config ClientConfig) (*ChatClient, error) {
 		client.memory = NewMemoryManager(config.Memory, memoryConfig)
 	}
 
+	// Initialize cache if provided
+	if config.Cache != nil {
+		cacheConfig := DefaultCacheConfig()
+		if config.CacheConfig != nil {
+			cacheConfig = *config.CacheConfig
+		}
+		client.cache = NewCacheManager(config.Cache, cacheConfig)
+	}
+
 	return client, nil
 }
 
 // CreateChatCompletion creates a chat completion
 func (c *ChatClient) CreateChatCompletion(ctx context.Context, req *provider.ChatCompletionRequest) (*provider.ChatCompletionResponse, error) {
+	// Token validation (if enabled)
+	if c.validateTokens && c.tokenEstimator != nil {
+		maxTokens := 4096 // Default max completion tokens
+		if req.MaxTokens != nil {
+			maxTokens = *req.MaxTokens
+		}
+
+		validation, err := ValidateTokens(c.tokenEstimator, req.Model, req.Messages, maxTokens)
+		if err != nil {
+			return nil, fmt.Errorf("token validation failed: %w", err)
+		}
+
+		if validation.ExceedsLimit {
+			return nil, &TokenLimitError{
+				EstimatedTokens: validation.EstimatedTokens,
+				ContextWindow:   validation.ContextWindow,
+				AvailableTokens: validation.AvailableTokens,
+				Model:           req.Model,
+			}
+		}
+	}
+
+	// Check cache first (if enabled)
+	if c.cache != nil && c.cache.ShouldCache(req) {
+		entry, err := c.cache.Get(ctx, req)
+		if err == nil && entry != nil {
+			// Cache hit - add metadata and return
+			if entry.Response.ProviderMetadata == nil {
+				entry.Response.ProviderMetadata = make(map[string]any)
+			}
+			entry.Response.ProviderMetadata["cache_hit"] = true
+			entry.Response.ProviderMetadata["cached_at"] = entry.CachedAt
+			return entry.Response, nil
+		}
+	}
+
 	info := LLMCallInfo{
 		CallID:       newCallID(),
 		ProviderName: c.provider.Name(),
@@ -133,6 +234,14 @@ func (c *ChatClient) CreateChatCompletion(ctx context.Context, req *provider.Cha
 	// Hook: after response
 	if c.hook != nil {
 		c.hook.AfterResponse(ctx, info, req, resp, err)
+	}
+
+	// Cache the successful response
+	if err == nil && c.cache != nil && c.cache.ShouldCache(req) {
+		if cacheErr := c.cache.Set(ctx, req, resp); cacheErr != nil {
+			c.logger.Warn("failed to cache response",
+				slog.String("error", cacheErr.Error()))
+		}
 	}
 
 	return resp, err
@@ -190,6 +299,21 @@ func (c *ChatClient) HasMemory() bool {
 // Logger returns the client's logger
 func (c *ChatClient) Logger() *slog.Logger {
 	return c.logger
+}
+
+// Cache returns the cache manager (nil if not configured)
+func (c *ChatClient) Cache() *CacheManager {
+	return c.cache
+}
+
+// HasCache returns true if caching is configured
+func (c *ChatClient) HasCache() bool {
+	return c.cache != nil
+}
+
+// TokenEstimator returns the token estimator (nil if not configured)
+func (c *ChatClient) TokenEstimator() TokenEstimator {
+	return c.tokenEstimator
 }
 
 // CreateChatCompletionWithMemory creates a chat completion using conversation memory
