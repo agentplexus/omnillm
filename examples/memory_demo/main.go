@@ -231,18 +231,19 @@ func createClientWithMemory(kvsClient kvs.Client, memoryConfig *omnillm.MemoryCo
 		provider = omnillm.ProviderNameBedrock
 	}
 
-	config := omnillm.ClientConfig{
-		Provider:     provider,
-		APIKey:       apiKey,
+	providerConfig := omnillm.ProviderConfig{
+		Provider: provider,
+		APIKey:   apiKey,
+	}
+	if provider == omnillm.ProviderNameBedrock {
+		providerConfig.Region = "us-east-1"
+	}
+
+	return omnillm.NewClient(omnillm.ClientConfig{
+		Providers:    []omnillm.ProviderConfig{providerConfig},
 		Memory:       kvsClient,
 		MemoryConfig: memoryConfig,
-	}
-
-	if provider == omnillm.ProviderNameBedrock {
-		config.Region = "us-east-1"
-	}
-
-	return omnillm.NewClient(config)
+	})
 }
 
 func getAvailableModel() string {

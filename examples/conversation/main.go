@@ -109,18 +109,22 @@ func runConversation() error {
 }
 
 func createClient(provider omnillm.ProviderName) (*omnillm.ChatClient, error) {
-	config := omnillm.ClientConfig{Provider: provider}
+	var providerConfig omnillm.ProviderConfig
 
 	switch provider {
 	case omnillm.ProviderNameOpenAI:
-		config.APIKey = os.Getenv("OPENAI_API_KEY")
+		providerConfig = omnillm.ProviderConfig{Provider: provider, APIKey: os.Getenv("OPENAI_API_KEY")}
 	case omnillm.ProviderNameAnthropic:
-		config.APIKey = os.Getenv("ANTHROPIC_API_KEY")
+		providerConfig = omnillm.ProviderConfig{Provider: provider, APIKey: os.Getenv("ANTHROPIC_API_KEY")}
 	case omnillm.ProviderNameBedrock:
-		config.Region = "us-east-1"
+		providerConfig = omnillm.ProviderConfig{Provider: provider, Region: "us-east-1"}
+	default:
+		providerConfig = omnillm.ProviderConfig{Provider: provider}
 	}
 
-	return omnillm.NewClient(config)
+	return omnillm.NewClient(omnillm.ClientConfig{
+		Providers: []omnillm.ProviderConfig{providerConfig},
+	})
 }
 
 func getNextProvider(current omnillm.ProviderName) omnillm.ProviderName {

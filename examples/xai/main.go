@@ -42,8 +42,9 @@ func main() {
 
 func demonstrateBasicCompletion(apiKey string) error {
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameXAI,
-		APIKey:   apiKey,
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameXAI, APIKey: apiKey},
+		},
 	})
 	if err != nil {
 		return err
@@ -73,8 +74,9 @@ func demonstrateBasicCompletion(apiKey string) error {
 
 func demonstrateStreaming(apiKey string) error {
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameXAI,
-		APIKey:   apiKey,
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameXAI, APIKey: apiKey},
+		},
 	})
 	if err != nil {
 		return err
@@ -119,8 +121,9 @@ func demonstrateStreaming(apiKey string) error {
 
 func demonstrateSystemMessage(apiKey string) error {
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameXAI,
-		APIKey:   apiKey,
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameXAI, APIKey: apiKey},
+		},
 	})
 	if err != nil {
 		return err

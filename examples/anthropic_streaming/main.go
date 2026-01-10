@@ -18,8 +18,9 @@ func main() {
 
 	// Create Anthropic client
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameAnthropic,
-		APIKey:   apiKey,
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameAnthropic, APIKey: apiKey},
+		},
 	})
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)

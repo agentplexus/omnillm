@@ -12,8 +12,9 @@ func main() {
 
 	// Create an OpenAI client
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameOpenAI,
-		APIKey:   "demo-key", // This won't work without a real key, but shows the structure
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameOpenAI, APIKey: "demo-key"}, // This won't work without a real key, but shows the structure
+		},
 	})
 	if err != nil {
 		log.Printf("Failed to create client: %v", err)

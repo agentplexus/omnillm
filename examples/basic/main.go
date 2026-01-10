@@ -23,8 +23,9 @@ func main() {
 		{
 			Name: "OpenAI",
 			Config: omnillm.ClientConfig{
-				Provider: omnillm.ProviderNameOpenAI,
-				APIKey:   os.Getenv("OPENAI_API_KEY"),
+				Providers: []omnillm.ProviderConfig{
+					{Provider: omnillm.ProviderNameOpenAI, APIKey: os.Getenv("OPENAI_API_KEY")},
+				},
 			},
 			Model: omnillm.ModelGPT4o,
 			Messages: []omnillm.Message{
@@ -37,8 +38,9 @@ func main() {
 		{
 			Name: "Anthropic",
 			Config: omnillm.ClientConfig{
-				Provider: omnillm.ProviderNameAnthropic,
-				APIKey:   os.Getenv("ANTHROPIC_API_KEY"),
+				Providers: []omnillm.ProviderConfig{
+					{Provider: omnillm.ProviderNameAnthropic, APIKey: os.Getenv("ANTHROPIC_API_KEY")},
+				},
 			},
 			Model: omnillm.ModelClaude3Sonnet,
 			Messages: []omnillm.Message{
@@ -55,8 +57,9 @@ func main() {
 		{
 			Name: "AWS Bedrock",
 			Config: omnillm.ClientConfig{
-				Provider: omnillm.ProviderNameBedrock,
-				Region:   "us-east-1",
+				Providers: []omnillm.ProviderConfig{
+					{Provider: omnillm.ProviderNameBedrock, Region: "us-east-1"},
+				},
 			},
 			Model: omnillm.ModelBedrockClaude3Sonnet,
 			Messages: []omnillm.Message{
@@ -69,8 +72,9 @@ func main() {
 		{
 			Name: "Ollama (Local)",
 			Config: omnillm.ClientConfig{
-				Provider: omnillm.ProviderNameOllama,
-				BaseURL:  "http://localhost:11434",
+				Providers: []omnillm.ProviderConfig{
+					{Provider: omnillm.ProviderNameOllama, BaseURL: "http://localhost:11434"},
+				},
 			},
 			Model: "llama3", // Use the model name as it appears in "ollama list"
 			Messages: []omnillm.Message{

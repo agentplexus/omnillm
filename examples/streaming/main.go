@@ -26,8 +26,9 @@ func main() {
 
 func demonstrateOpenAIStreaming() error {
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameOpenAI,
-		APIKey:   os.Getenv("OPENAI_API_KEY"),
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameOpenAI, APIKey: os.Getenv("OPENAI_API_KEY")},
+		},
 	})
 	if err != nil {
 		return err
@@ -71,8 +72,9 @@ func demonstrateOpenAIStreaming() error {
 
 func demonstrateAnthropicStreaming() error {
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameAnthropic,
-		APIKey:   os.Getenv("ANTHROPIC_API_KEY"),
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameAnthropic, APIKey: os.Getenv("ANTHROPIC_API_KEY")},
+		},
 	})
 	if err != nil {
 		return err

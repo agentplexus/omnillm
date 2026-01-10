@@ -31,8 +31,9 @@ func main() {
 
 	// OpenAI client (won't work without real API key)
 	openaiClient, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameOpenAI,
-		APIKey:   "demo-openai-key",
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameOpenAI, APIKey: "demo-openai-key"},
+		},
 	})
 	if err != nil {
 		log.Printf("Failed to create OpenAI client: %v", err)
@@ -43,8 +44,9 @@ func main() {
 
 	// Anthropic client (won't work without real API key)
 	anthropicClient, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameAnthropic,
-		APIKey:   "demo-anthropic-key",
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameAnthropic, APIKey: "demo-anthropic-key"},
+		},
 	})
 	if err != nil {
 		log.Printf("Failed to create Anthropic client: %v", err)
@@ -55,8 +57,9 @@ func main() {
 
 	// Bedrock client (requires AWS credentials)
 	bedrockClient, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameBedrock,
-		Region:   "us-east-1",
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameBedrock, Region: "us-east-1"},
+		},
 	})
 	if err != nil {
 		log.Printf("⚠️  Bedrock client creation failed (expected without AWS creds): %v", err)
@@ -67,8 +70,9 @@ func main() {
 
 	// Ollama client (works locally, no credentials needed)
 	ollamaClient, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameOllama,
-		BaseURL:  "http://localhost:11434",
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameOllama, BaseURL: "http://localhost:11434"},
+		},
 	})
 	if err != nil {
 		log.Printf("⚠️  Ollama client creation failed (is Ollama running?): %v", err)

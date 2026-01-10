@@ -84,8 +84,9 @@ func main() {
 
 	// Inject the custom provider directly into omnillm
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		CustomProvider: customProv, // Direct provider injection!
-		// Note: Provider field is ignored when CustomProvider is set
+		Providers: []omnillm.ProviderConfig{
+			{CustomProvider: customProv}, // Direct provider injection!
+		},
 	})
 	if err != nil {
 		log.Fatal(err)

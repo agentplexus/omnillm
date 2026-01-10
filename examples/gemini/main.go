@@ -18,8 +18,9 @@ func main() {
 
 	// Create a Gemini client
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameGemini,
-		APIKey:   apiKey,
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameGemini, APIKey: apiKey},
+		},
 	})
 	if err != nil {
 		log.Fatal("Failed to create client:", err)

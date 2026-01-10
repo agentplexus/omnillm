@@ -12,8 +12,9 @@ import (
 func main() {
 	// Create a client for Ollama
 	client, err := omnillm.NewClient(omnillm.ClientConfig{
-		Provider: omnillm.ProviderNameOllama,
-		BaseURL:  "http://localhost:11434", // Optional - this is the default
+		Providers: []omnillm.ProviderConfig{
+			{Provider: omnillm.ProviderNameOllama, BaseURL: "http://localhost:11434"}, // Optional - default is localhost
+		},
 	})
 	if err != nil {
 		log.Fatal(err)
