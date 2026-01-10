@@ -95,8 +95,9 @@ import (
 func main() {
     // Create a client for OpenAI
     client, err := omnillm.NewClient(omnillm.ClientConfig{
-        Provider: omnillm.ProviderNameOpenAI,
-        APIKey:   "your-openai-api-key",
+        Providers: []omnillm.ProviderConfig{
+            {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-openai-api-key"},
+        },
     })
     if err != nil {
         log.Fatal(err)
@@ -133,9 +134,9 @@ func main() {
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-openai-api-key",
-    BaseURL:  "https://api.openai.com/v1", // optional
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-openai-api-key"},
+    },
 })
 ```
 
@@ -146,9 +147,9 @@ client, err := omnillm.NewClient(omnillm.ClientConfig{
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameAnthropic,
-    APIKey:   "your-anthropic-api-key",
-    BaseURL:  "https://api.anthropic.com", // optional
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "your-anthropic-api-key"},
+    },
 })
 ```
 
@@ -159,8 +160,9 @@ client, err := omnillm.NewClient(omnillm.ClientConfig{
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameGemini,
-    APIKey:   "your-gemini-api-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameGemini, APIKey: "your-gemini-api-key"},
+    },
 })
 ```
 
@@ -186,7 +188,9 @@ if err != nil {
 
 // Use it with omnillm via CustomProvider
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    CustomProvider: bedrockProvider,
+    Providers: []omnillm.ProviderConfig{
+        {CustomProvider: bedrockProvider},
+    },
 })
 ```
 
@@ -199,9 +203,9 @@ See [External Providers](#external-providers) for more details.
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameXAI,
-    APIKey:   "your-xai-api-key",
-    BaseURL:  "https://api.x.ai/v1", // optional
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameXAI, APIKey: "your-xai-api-key"},
+    },
 })
 ```
 
@@ -212,8 +216,9 @@ client, err := omnillm.NewClient(omnillm.ClientConfig{
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOllama,
-    BaseURL:  "http://localhost:11434", // default Ollama endpoint
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOllama, BaseURL: "http://localhost:11434"},
+    },
 })
 ```
 
@@ -234,14 +239,16 @@ import (
 )
 
 // Create the external provider
-provider, err := bedrock.NewProvider("us-east-1")
+bedrockProv, err := bedrock.NewProvider("us-east-1")
 if err != nil {
     log.Fatal(err)
 }
 
-// Inject via CustomProvider
+// Inject via CustomProvider in Providers slice
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    CustomProvider: provider,
+    Providers: []omnillm.ProviderConfig{
+        {CustomProvider: bedrockProv},
+    },
 })
 ```
 
@@ -320,8 +327,9 @@ memoryConfig := omnillm.MemoryConfig{
 
 // Create client with memory (using Redis, DynamoDB, etc.)
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider:     omnillm.ProviderNameOpenAI,
-    APIKey:       "your-api-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-api-key"},
+    },
     Memory:       kvsClient,          // Your KVS implementation
     MemoryConfig: &memoryConfig,
 })
@@ -377,9 +385,10 @@ Memory works with any KVS implementation:
 // Example with Redis (using a hypothetical Redis KVS implementation)
 redisKVS := redis.NewKVSClient("localhost:6379")
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-key",
-    Memory:   redisKVS,
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-key"},
+    },
+    Memory: redisKVS,
 })
 ```
 
@@ -439,8 +448,9 @@ func (h *LoggingHook) WrapStream(ctx context.Context, info omnillm.LLMCallInfo, 
 
 // Use the hook when creating a client
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider:          omnillm.ProviderNameOpenAI,
-    APIKey:            "your-api-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-api-key"},
+    },
     ObservabilityHook: &LoggingHook{},
 })
 ```
@@ -498,18 +508,12 @@ OmniLLM supports automatic failover to backup providers when the primary provide
 ### Basic Usage
 
 ```go
+// Providers[0] is primary, Providers[1+] are fallbacks
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "openai-key",
-    FallbackProviders: []omnillm.ProviderConfig{
-        {
-            Provider: omnillm.ProviderNameAnthropic,
-            APIKey:   "anthropic-key",
-        },
-        {
-            Provider: omnillm.ProviderNameGemini,
-            APIKey:   "gemini-key",
-        },
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},       // Primary
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"}, // Fallback 1
+        {Provider: omnillm.ProviderNameGemini, APIKey: "gemini-key"},       // Fallback 2
     },
 })
 
@@ -523,9 +527,8 @@ Enable circuit breaker to temporarily skip providers that are failing repeatedly
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "openai-key",
-    FallbackProviders: []omnillm.ProviderConfig{
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},
         {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"},
     },
     CircuitBreakerConfig: &omnillm.CircuitBreakerConfig{
@@ -593,8 +596,9 @@ Enable automatic token validation in client:
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider:       omnillm.ProviderNameOpenAI,
-    APIKey:         "your-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-key"},
+    },
     TokenEstimator: omnillm.NewTokenEstimator(omnillm.DefaultTokenEstimatorConfig()),
     ValidateTokens: true, // Rejects requests that exceed context window
 })
@@ -641,9 +645,10 @@ OmniLLM supports response caching to reduce API costs for identical requests. Ca
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-key",
-    Cache:    kvsClient, // Your KVS implementation (Redis, DynamoDB, etc.)
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-key"},
+    },
+    Cache: kvsClient, // Your KVS implementation (Redis, DynamoDB, etc.)
     CacheConfig: &omnillm.CacheConfig{
         TTL:       1 * time.Hour,        // Cache duration
         KeyPrefix: "myapp:llm-cache",    // Key prefix in KVS
@@ -701,20 +706,23 @@ request := &omnillm.ChatCompletionRequest{
 
 // OpenAI
 openaiClient, _ := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "openai-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},
+    },
 })
 
 // Anthropic
 anthropicClient, _ := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameAnthropic,
-    APIKey:   "anthropic-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"},
+    },
 })
 
 // Gemini
 geminiClient, _ := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameGemini,
-    APIKey:   "gemini-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameGemini, APIKey: "gemini-key"},
+    },
 })
 
 // Same API call for all providers
@@ -806,9 +814,10 @@ import omnillmtest "github.com/agentplexus/omnillm/testing"
 mockKVS := omnillmtest.NewMockKVS()
 
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "test-key",
-    Memory:   mockKVS,
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "test-key"},
+    },
+    Memory: mockKVS,
 })
 ```
 
@@ -850,11 +859,15 @@ go run examples/custom_provider/main.go
 
 ```go
 config := omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-api-key",
-    BaseURL:  "https://custom-endpoint.com/v1",
-    Extra: map[string]any{
-        "timeout": 60, // Custom provider-specific settings
+    Providers: []omnillm.ProviderConfig{
+        {
+            Provider: omnillm.ProviderNameOpenAI,
+            APIKey:   "your-api-key",
+            BaseURL:  "https://custom-endpoint.com/v1",
+            Extra: map[string]any{
+                "timeout": 60, // Custom provider-specific settings
+            },
+        },
     },
 }
 ```
@@ -926,9 +939,10 @@ logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 }))
 
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-api-key",
-    Logger:   logger, // Optional: defaults to null logger if not provided
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-api-key"},
+    },
+    Logger: logger, // Optional: defaults to null logger if not provided
 })
 
 // Access the logger if needed
@@ -990,11 +1004,15 @@ rt := retryhttp.NewWithOptions(
 
 // Create client with retry-enabled HTTP client
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   os.Getenv("OPENAI_API_KEY"),
-    HTTPClient: &http.Client{
-        Transport: rt,
-        Timeout:   2 * time.Minute, // Allow time for retries
+    Providers: []omnillm.ProviderConfig{
+        {
+            Provider: omnillm.ProviderNameOpenAI,
+            APIKey:   os.Getenv("OPENAI_API_KEY"),
+            HTTPClient: &http.Client{
+                Transport: rt,
+                Timeout:   2 * time.Minute, // Allow time for retries
+            },
+        },
     },
 })
 ```
@@ -1081,7 +1099,9 @@ func main() {
 
     // Inject it directly into omnillm - no core modifications needed!
     client, err := omnillm.NewClient(omnillm.ClientConfig{
-        CustomProvider: customProvider,
+        Providers: []omnillm.ProviderConfig{
+            {CustomProvider: customProvider},
+        },
     })
 
     // Use the same omnillm API
@@ -1114,7 +1134,7 @@ To add a built-in provider to the core library, follow the same structure as exi
 - **🏗️ Reference Pattern**: Internal providers demonstrate the exact structure external providers should follow
 - **🧪 Easy Testing**: Both internal and external providers use the same `provider.Provider` interface
 - **📦 Self-Contained**: Each provider manages its own HTTP client, types, and adapter logic
-- **🔧 Direct Injection**: Clean dependency injection via `ClientConfig.CustomProvider`
+- **🔧 Direct Injection**: Clean dependency injection via `ProviderConfig.CustomProvider`
 
 ## 📊 Model Support
 

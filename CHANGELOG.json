@@ -79,12 +79,25 @@
         {
           "description": "`Logprobs` and `TopLogprobs` parameters for log probability output (OpenAI)",
           "commit": "e7dc833"
+        },
+        {
+          "description": "`ErrNoProviders` error for when `ClientConfig.Providers` is empty"
         }
       ],
       "changed": [
         {
-          "description": "`ClientConfig` extended with fallback, circuit breaker, token estimation, and caching options",
-          "commit": "582c556"
+          "description": "`ClientConfig` refactored to use unified `Providers []ProviderConfig` slice (index 0 = primary, 1+ = fallbacks)",
+          "breaking": true
+        },
+        {
+          "description": "Removed redundant `Provider`, `APIKey`, `BaseURL`, `Region`, `Timeout`, `HTTPClient`, `CustomProvider`, `Extra`, `FallbackProviders` fields from `ClientConfig`",
+          "breaking": true
+        },
+        {
+          "description": "`ProviderConfig` now supports `CustomProvider` field for 3rd party provider injection"
+        },
+        {
+          "description": "Provider constructors refactored to accept `ProviderConfig` instead of `ClientConfig`"
         },
         {
           "description": "`CreateChatCompletion` now supports optional token validation and response caching",

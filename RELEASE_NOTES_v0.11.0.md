@@ -7,8 +7,11 @@
 
 Version 0.11.0 is a major feature release that adds four key reliability and cost optimization features: Fallback Providers, Circuit Breaker, Token Estimation, and Response Caching. This release also includes extended sampling parameters for fine-grained control over model outputs.
 
+**⚠️ Breaking Change:** `ClientConfig` API refactored to use unified `Providers []ProviderConfig` slice. See [Upgrade Guide](#upgrade-guide) for migration instructions.
+
 **Highlights:**
 
+- **Unified Provider Configuration**: Cleaner API with `Providers` slice (index 0 = primary, 1+ = fallbacks)
 - **Fallback Providers**: Automatic failover to backup providers when primary fails
 - **Circuit Breaker**: Prevent cascading failures by temporarily skipping unhealthy providers
 - **Token Estimation**: Pre-flight validation to avoid context window limit errors
@@ -24,12 +27,12 @@ Version 0.11.0 is a major feature release that adds four key reliability and cos
 Automatic failover to backup providers when the primary provider fails with retryable errors (rate limits, server errors, network issues).
 
 ```go
+// Providers[0] is primary, Providers[1+] are fallbacks
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "openai-key",
-    FallbackProviders: []omnillm.ProviderConfig{
-        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"},
-        {Provider: omnillm.ProviderNameGemini, APIKey: "gemini-key"},
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},       // Primary
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"}, // Fallback 1
+        {Provider: omnillm.ProviderNameGemini, APIKey: "gemini-key"},       // Fallback 2
     },
 })
 
@@ -50,9 +53,10 @@ Prevents cascading failures by temporarily skipping providers that are failing r
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "openai-key",
-    FallbackProviders: []omnillm.ProviderConfig{...},
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"},
+    },
     CircuitBreakerConfig: &omnillm.CircuitBreakerConfig{
         FailureThreshold: 5,               // Open after 5 consecutive failures
         SuccessThreshold: 2,               // Close after 2 successes in half-open
@@ -81,8 +85,9 @@ window := estimator.GetContextWindow("gpt-4o") // 128000
 
 // Automatic validation in client
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider:       omnillm.ProviderNameOpenAI,
-    APIKey:         "your-key",
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-key"},
+    },
     TokenEstimator: omnillm.NewTokenEstimator(omnillm.DefaultTokenEstimatorConfig()),
     ValidateTokens: true,
 })
@@ -100,9 +105,10 @@ Cache identical requests to reduce API costs with configurable TTL.
 
 ```go
 client, err := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   "your-key",
-    Cache:    kvsClient, // Redis, DynamoDB, etc.
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "your-key"},
+    },
+    Cache: kvsClient, // Redis, DynamoDB, etc.
     CacheConfig: &omnillm.CacheConfig{
         TTL:       1 * time.Hour,
         KeyPrefix: "myapp:llm-cache",
@@ -192,19 +198,38 @@ type FallbackAttempt struct {
 
 ```go
 type ClientConfig struct {
-    // Existing fields...
+    // Provider configuration (BREAKING CHANGE in v0.11.0)
+    Providers []ProviderConfig  // Index 0 = primary, 1+ = fallbacks
 
-    // NEW: Fallback & Circuit Breaker
-    FallbackProviders    []ProviderConfig
+    // Circuit Breaker (optional)
     CircuitBreakerConfig *CircuitBreakerConfig
 
-    // NEW: Token Estimation
+    // Memory
+    Memory       kvs.Client
+    MemoryConfig *MemoryConfig
+
+    // Observability
+    ObservabilityHook ObservabilityHook
+    Logger            *slog.Logger
+
+    // Token Estimation
     TokenEstimator TokenEstimator
     ValidateTokens bool
 
-    // NEW: Response Caching
+    // Response Caching
     Cache       kvs.Client
     CacheConfig *CacheConfig
+}
+
+type ProviderConfig struct {
+    Provider       ProviderName
+    APIKey         string
+    BaseURL        string
+    Region         string
+    Timeout        time.Duration
+    HTTPClient     *http.Client
+    Extra          map[string]any
+    CustomProvider provider.Provider  // For 3rd party providers
 }
 ```
 
@@ -214,28 +239,87 @@ type ClientConfig struct {
 
 ### From v0.10.0
 
-No breaking changes. All new features are opt-in.
+**⚠️ Breaking Change:** The `ClientConfig` API has been refactored to use a unified `Providers` slice.
 
 ```bash
 go get github.com/agentplexus/omnillm@v0.11.0
 go mod tidy
 ```
 
-### Enable Fallback Providers
+### Migration: Basic Client
 
 ```go
-// Before
+// Before (v0.10.0)
 client, _ := omnillm.NewClient(omnillm.ClientConfig{
     Provider: omnillm.ProviderNameOpenAI,
     APIKey:   apiKey,
 })
 
-// After (with fallback)
+// After (v0.11.0)
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: apiKey},
+    },
+})
+```
+
+### Migration: With Fallback Providers
+
+```go
+// Before (v0.10.0)
 client, _ := omnillm.NewClient(omnillm.ClientConfig{
     Provider: omnillm.ProviderNameOpenAI,
     APIKey:   apiKey,
     FallbackProviders: []omnillm.ProviderConfig{
         {Provider: omnillm.ProviderNameAnthropic, APIKey: anthropicKey},
+    },
+})
+
+// After (v0.11.0) - Providers[0] is primary, Providers[1+] are fallbacks
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: apiKey},
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: anthropicKey},
+    },
+})
+```
+
+### Migration: Custom HTTP Client / Timeout
+
+```go
+// Before (v0.10.0)
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    Provider:   omnillm.ProviderNameOpenAI,
+    APIKey:     apiKey,
+    Timeout:    5 * time.Minute,
+    HTTPClient: customHTTPClient,
+})
+
+// After (v0.11.0) - Timeout/HTTPClient moved to ProviderConfig
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    Providers: []omnillm.ProviderConfig{
+        {
+            Provider:   omnillm.ProviderNameOpenAI,
+            APIKey:     apiKey,
+            Timeout:    5 * time.Minute,
+            HTTPClient: customHTTPClient,
+        },
+    },
+})
+```
+
+### Migration: Custom Provider
+
+```go
+// Before (v0.10.0)
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    CustomProvider: myCustomProvider,
+})
+
+// After (v0.11.0) - CustomProvider moved to ProviderConfig
+client, _ := omnillm.NewClient(omnillm.ClientConfig{
+    Providers: []omnillm.ProviderConfig{
+        {CustomProvider: myCustomProvider},
     },
 })
 ```
@@ -244,8 +328,9 @@ client, _ := omnillm.NewClient(omnillm.ClientConfig{
 
 ```go
 client, _ := omnillm.NewClient(omnillm.ClientConfig{
-    Provider:       omnillm.ProviderNameOpenAI,
-    APIKey:         apiKey,
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: apiKey},
+    },
     TokenEstimator: omnillm.NewTokenEstimator(omnillm.DefaultTokenEstimatorConfig()),
     ValidateTokens: true,
 })
@@ -255,9 +340,10 @@ client, _ := omnillm.NewClient(omnillm.ClientConfig{
 
 ```go
 client, _ := omnillm.NewClient(omnillm.ClientConfig{
-    Provider: omnillm.ProviderNameOpenAI,
-    APIKey:   apiKey,
-    Cache:    kvsClient, // Your KVS implementation
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: apiKey},
+    },
+    Cache: kvsClient, // Your KVS implementation
     CacheConfig: &omnillm.CacheConfig{
         TTL: 1 * time.Hour,
     },
