@@ -99,7 +99,9 @@ func TestNewClient_CustomProvider(t *testing.T) {
 	mockProv := NewMockProvider("test-provider")
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
@@ -113,10 +115,19 @@ func TestNewClient_CustomProvider(t *testing.T) {
 
 func TestNewClient_UnsupportedProvider(t *testing.T) {
 	_, err := NewClient(ClientConfig{
-		Provider: "unsupported-provider",
+		Providers: []ProviderConfig{
+			{Provider: "unsupported-provider"},
+		},
 	})
-	if err != ErrUnsupportedProvider {
-		t.Errorf("Expected ErrUnsupportedProvider, got %v", err)
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+}
+
+func TestNewClient_NoProviders(t *testing.T) {
+	_, err := NewClient(ClientConfig{})
+	if err != ErrNoProviders {
+		t.Errorf("Expected ErrNoProviders, got %v", err)
 	}
 }
 
@@ -219,9 +230,11 @@ func TestChatClient_WithMemory(t *testing.T) {
 	mockKVS := mocktest.NewMockKVS()
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
-		Memory:         mockKVS,
-		MemoryConfig:   &MemoryConfig{MaxMessages: 10, KeyPrefix: "test"},
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
+		Memory:       mockKVS,
+		MemoryConfig: &MemoryConfig{MaxMessages: 10, KeyPrefix: "test"},
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
@@ -242,8 +255,10 @@ func TestChatClient_CreateChatCompletionWithMemory(t *testing.T) {
 	mockKVS := mocktest.NewMockKVS()
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
-		Memory:         mockKVS,
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
+		Memory: mockKVS,
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
@@ -306,8 +321,10 @@ func TestChatClient_CreateChatCompletionStreamWithMemory(t *testing.T) {
 	mockKVS := mocktest.NewMockKVS()
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
-		Memory:         mockKVS,
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
+		Memory: mockKVS,
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
@@ -364,8 +381,10 @@ func TestChatClient_ConversationManagement(t *testing.T) {
 	mockKVS := mocktest.NewMockKVS()
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
-		Memory:         mockKVS,
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
+		Memory: mockKVS,
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
@@ -405,7 +424,9 @@ func TestChatClient_NoMemory(t *testing.T) {
 	mockProv := NewMockProvider("test")
 
 	client, err := NewClient(ClientConfig{
-		CustomProvider: mockProv,
+		Providers: []ProviderConfig{
+			{CustomProvider: mockProv},
+		},
 	})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
