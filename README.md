@@ -14,6 +14,10 @@ OmniLLM is a unified Go SDK that provides a consistent interface for interacting
 - **🎯 Unified API**: Same interface across all providers
 - **📡 Streaming Support**: Real-time response streaming for all providers
 - **🧠 Conversation Memory**: Persistent conversation history using Key-Value Stores
+- **🔀 Fallback Providers**: Automatic failover to backup providers when primary fails
+- **⚡ Circuit Breaker**: Prevent cascading failures by temporarily skipping unhealthy providers
+- **🔢 Token Estimation**: Pre-flight token counting to validate requests before sending
+- **💾 Response Caching**: Cache identical requests with configurable TTL to reduce costs
 - **📊 Observability Hooks**: Extensible hooks for tracing, logging, and metrics without modifying core library
 - **🔄 Retry with Backoff**: Automatic retries for transient failures (rate limits, 5xx errors)
 - **🧪 Comprehensive Testing**: Unit tests, integration tests, and mock implementations included
@@ -486,6 +490,200 @@ func (h *OTelHook) WrapStream(ctx context.Context, info omnillm.LLMCallInfo, req
 - **Streaming Support**: Wrap streams to observe streaming responses
 - **Context Propagation**: Pass trace context through the entire call chain
 - **Flexible**: Implement only the methods you need; all are called if the hook is set
+
+## 🔀 Fallback Providers
+
+OmniLLM supports automatic failover to backup providers when the primary provider fails. Fallback only triggers on retryable errors (rate limits, server errors, network issues) - authentication errors and invalid requests do not trigger fallback.
+
+### Basic Usage
+
+```go
+client, err := omnillm.NewClient(omnillm.ClientConfig{
+    Provider: omnillm.ProviderNameOpenAI,
+    APIKey:   "openai-key",
+    FallbackProviders: []omnillm.ProviderConfig{
+        {
+            Provider: omnillm.ProviderNameAnthropic,
+            APIKey:   "anthropic-key",
+        },
+        {
+            Provider: omnillm.ProviderNameGemini,
+            APIKey:   "gemini-key",
+        },
+    },
+})
+
+// If OpenAI fails with a retryable error, automatically tries Anthropic, then Gemini
+response, err := client.CreateChatCompletion(ctx, request)
+```
+
+### With Circuit Breaker
+
+Enable circuit breaker to temporarily skip providers that are failing repeatedly:
+
+```go
+client, err := omnillm.NewClient(omnillm.ClientConfig{
+    Provider: omnillm.ProviderNameOpenAI,
+    APIKey:   "openai-key",
+    FallbackProviders: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"},
+    },
+    CircuitBreakerConfig: &omnillm.CircuitBreakerConfig{
+        FailureThreshold: 5,               // Open after 5 consecutive failures
+        SuccessThreshold: 2,               // Close after 2 successes in half-open
+        Timeout:          30 * time.Second, // Wait before trying again
+    },
+})
+```
+
+### Error Classification
+
+Fallback uses intelligent error classification:
+
+| Error Type | Triggers Fallback |
+|------------|-------------------|
+| Rate limits (429) | ✅ Yes |
+| Server errors (5xx) | ✅ Yes |
+| Network errors | ✅ Yes |
+| Auth errors (401/403) | ❌ No |
+| Invalid requests (400) | ❌ No |
+
+## ⚡ Circuit Breaker
+
+The circuit breaker pattern prevents cascading failures by temporarily skipping providers that are unhealthy.
+
+### States
+
+- **Closed**: Normal operation, requests flow through
+- **Open**: Provider is failing, requests skip it immediately
+- **Half-Open**: Testing if provider has recovered
+
+### Configuration
+
+```go
+cbConfig := &omnillm.CircuitBreakerConfig{
+    FailureThreshold:     5,               // Failures before opening
+    SuccessThreshold:     2,               // Successes to close from half-open
+    Timeout:              30 * time.Second, // Wait before half-open
+    FailureRateThreshold: 0.5,             // 50% failure rate opens circuit
+    MinimumRequests:      10,              // Minimum requests for rate calculation
+}
+```
+
+## 🔢 Token Estimation
+
+OmniLLM provides pre-flight token estimation to validate requests before sending them to the API. This helps avoid hitting context window limits.
+
+### Basic Usage
+
+```go
+// Create estimator with default config
+estimator := omnillm.NewTokenEstimator(omnillm.DefaultTokenEstimatorConfig())
+
+// Estimate tokens for messages
+tokens, err := estimator.EstimateTokens("gpt-4o", messages)
+
+// Get model's context window
+window := estimator.GetContextWindow("gpt-4o") // Returns 128000
+```
+
+### Automatic Validation
+
+Enable automatic token validation in client:
+
+```go
+client, err := omnillm.NewClient(omnillm.ClientConfig{
+    Provider:       omnillm.ProviderNameOpenAI,
+    APIKey:         "your-key",
+    TokenEstimator: omnillm.NewTokenEstimator(omnillm.DefaultTokenEstimatorConfig()),
+    ValidateTokens: true, // Rejects requests that exceed context window
+})
+
+// Returns TokenLimitError if request exceeds model limits
+response, err := client.CreateChatCompletion(ctx, request)
+if tlErr, ok := err.(*omnillm.TokenLimitError); ok {
+    fmt.Printf("Request has %d tokens, but model only supports %d\n",
+        tlErr.EstimatedTokens, tlErr.ContextWindow)
+}
+```
+
+### Built-in Context Windows
+
+Token estimator includes context windows for 40+ models:
+
+| Provider | Models | Context Window |
+|----------|--------|----------------|
+| OpenAI | GPT-4o, GPT-4o-mini | 128,000 |
+| OpenAI | o1 | 200,000 |
+| Anthropic | Claude 3/3.5/4 | 200,000 |
+| Google | Gemini 2.5 | 1,000,000 |
+| Google | Gemini 1.5 Pro | 2,000,000 |
+| X.AI | Grok 3/4 | 128,000 |
+
+### Custom Configuration
+
+```go
+config := omnillm.TokenEstimatorConfig{
+    CharactersPerToken: 3.5, // More conservative estimate
+    CustomContextWindows: map[string]int{
+        "my-custom-model": 500000,
+        "gpt-4o":          200000, // Override built-in
+    },
+}
+estimator := omnillm.NewTokenEstimator(config)
+```
+
+## 💾 Response Caching
+
+OmniLLM supports response caching to reduce API costs for identical requests. Caching uses the same KVS backend as conversation memory.
+
+### Basic Usage
+
+```go
+client, err := omnillm.NewClient(omnillm.ClientConfig{
+    Provider: omnillm.ProviderNameOpenAI,
+    APIKey:   "your-key",
+    Cache:    kvsClient, // Your KVS implementation (Redis, DynamoDB, etc.)
+    CacheConfig: &omnillm.CacheConfig{
+        TTL:       1 * time.Hour,        // Cache duration
+        KeyPrefix: "myapp:llm-cache",    // Key prefix in KVS
+    },
+})
+
+// First call hits the API
+response1, _ := client.CreateChatCompletion(ctx, request)
+
+// Second identical call returns cached response
+response2, _ := client.CreateChatCompletion(ctx, request)
+
+// Check if response was from cache
+if response2.ProviderMetadata["cache_hit"] == true {
+    fmt.Println("Response was cached!")
+}
+```
+
+### Cache Configuration
+
+```go
+cacheConfig := &omnillm.CacheConfig{
+    TTL:                1 * time.Hour,       // Time-to-live
+    KeyPrefix:          "omnillm:cache",     // Key prefix
+    SkipStreaming:      true,                // Don't cache streaming (default)
+    CacheableModels:    []string{"gpt-4o"},  // Only cache specific models (nil = all)
+    IncludeTemperature: true,                // Temperature affects cache key
+    IncludeSeed:        true,                // Seed affects cache key
+}
+```
+
+### Cache Key Generation
+
+Cache keys are generated from a SHA-256 hash of:
+
+- Model name
+- Messages (role, content, name, tool_call_id)
+- MaxTokens, Temperature, TopP, TopK, Seed, Stop sequences
+
+Different parameter values = different cache keys.
 
 ## 🔄 Provider Switching
 
