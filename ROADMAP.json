@@ -1,0 +1,227 @@
+{
+  "ir_version": "1.0",
+  "project": "OmniLLM",
+  "repository": "https://github.com/agentplexus/omnillm",
+  "generated_at": "2026-01-10T00:00:00Z",
+
+  "areas": [
+    {"id": "client", "name": "Client Features", "priority": 1},
+    {"id": "reliability", "name": "Reliability", "priority": 2},
+    {"id": "performance", "name": "Performance", "priority": 3},
+    {"id": "testing", "name": "Testing", "priority": 4},
+    {"id": "documentation", "name": "Documentation", "priority": 5},
+    {"id": "infrastructure", "name": "Infrastructure", "priority": 6},
+    {"id": "api", "name": "API Extensions", "priority": 7}
+  ],
+
+  "items": [
+    {
+      "id": "retry",
+      "title": "Retry with Backoff",
+      "description": "Automatic retries for transient failures (rate limits, 5xx errors).",
+      "status": "completed",
+      "version": "0.7.0",
+      "area": "reliability",
+      "type": "Added",
+      "priority": "high",
+      "order": 1,
+      "content": [
+        {"type": "text", "value": "Implemented via `ClientConfig.HTTPClient` with `retryhttp.RetryTransport`."},
+        {"type": "code", "language": "go", "value": "rt := retryhttp.NewWithOptions(\n    retryhttp.WithMaxRetries(5),\n    retryhttp.WithInitialBackoff(500 * time.Millisecond),\n)\nclient, err := omnillm.NewClient(omnillm.ClientConfig{\n    Provider:   omnillm.ProviderNameOpenAI,\n    APIKey:     \"...\",\n    HTTPClient: &http.Client{Transport: rt},\n})"}
+      ]
+    },
+    {
+      "id": "timeout",
+      "title": "Request Timeouts",
+      "description": "Per-request timeout configuration.",
+      "status": "completed",
+      "version": "0.10.0",
+      "area": "client",
+      "type": "Added",
+      "priority": "high",
+      "order": 2,
+      "content": [
+        {"type": "text", "value": "Implemented via `ClientConfig.Timeout`."},
+        {"type": "code", "language": "go", "value": "ClientConfig{\n    Timeout: 300 * time.Second,  // Recommended for reasoning models\n}"}
+      ]
+    },
+    {
+      "id": "sampling",
+      "title": "Extended Sampling Parameters",
+      "description": "Additional sampling and generation parameters beyond Temperature and TopP.",
+      "status": "completed",
+      "version": "0.11.0",
+      "area": "client",
+      "type": "Added",
+      "priority": "high",
+      "order": 3,
+      "content": [
+        {"type": "text", "value": "Implemented via `ChatCompletionRequest` fields."},
+        {
+          "type": "table",
+          "headers": ["Parameter", "Providers", "Description"],
+          "rows": [
+            ["`TopK`", "Anthropic, Gemini, Ollama", "Limits token selection to top K candidates"],
+            ["`Seed`", "OpenAI, X.AI, Ollama", "Enables reproducible outputs"],
+            ["`N`", "OpenAI", "Number of completions to generate"],
+            ["`ResponseFormat`", "OpenAI, Gemini", "JSON mode (`{\"type\": \"json_object\"}`)"],
+            ["`Logprobs`", "OpenAI", "Return log probabilities of output tokens"],
+            ["`TopLogprobs`", "OpenAI", "Number of most likely tokens to return"]
+          ]
+        },
+        {"type": "code", "language": "go", "value": "req := &omnillm.ChatCompletionRequest{\n    Model:    omnillm.ModelGPT4o,\n    Messages: messages,\n    TopK:     ptr(40),                                    // Anthropic, Gemini, Ollama\n    Seed:     ptr(42),                                    // OpenAI, X.AI, Ollama\n    ResponseFormat: &omnillm.ResponseFormat{Type: \"json_object\"}, // OpenAI, Gemini\n}"}
+      ]
+    },
+    {
+      "id": "fallback",
+      "title": "Fallback Providers",
+      "description": "Automatic failover when primary provider fails.",
+      "status": "planned",
+      "area": "reliability",
+      "priority": "high",
+      "order": 4,
+      "content": [
+        {"type": "code", "language": "go", "value": "ClientConfig{\n    Provider: omnillm.ProviderNameOpenAI,\n    FallbackProviders: []ProviderConfig{\n        {Provider: omnillm.ProviderNameAnthropic, APIKey: \"...\"},\n    },\n}"}
+      ]
+    },
+    {
+      "id": "circuit-breaker",
+      "title": "Circuit Breaker",
+      "description": "Prevent cascading failures when provider is unhealthy.",
+      "status": "planned",
+      "area": "reliability",
+      "priority": "high",
+      "order": 5
+    },
+    {
+      "id": "token-counting",
+      "title": "Token Counting/Estimation",
+      "description": "Estimate tokens before sending to avoid limit errors.",
+      "status": "planned",
+      "area": "performance",
+      "priority": "high",
+      "order": 6
+    },
+    {
+      "id": "caching",
+      "title": "Response Caching",
+      "description": "Cache identical requests to reduce costs (with TTL).",
+      "status": "planned",
+      "area": "performance",
+      "priority": "high",
+      "order": 7
+    },
+    {
+      "id": "rate-limiting",
+      "title": "Rate Limiting",
+      "description": "Client-side rate limiter to respect provider limits.",
+      "status": "planned",
+      "area": "reliability",
+      "priority": "medium",
+      "order": 8
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "description": "Expand test coverage and improve testing infrastructure.",
+      "status": "planned",
+      "area": "testing",
+      "priority": "medium",
+      "order": 9,
+      "tasks": [
+        {"description": "**Expand test coverage** - Integration tests currently require API keys; consider adding more mock-based unit tests", "completed": false},
+        {"description": "**Add streaming tests** - Some providers lack comprehensive streaming response tests", "completed": false},
+        {"description": "**Provider parity testing** - Ensure all providers have equivalent test coverage", "completed": false}
+      ]
+    },
+    {
+      "id": "documentation",
+      "title": "Documentation",
+      "description": "Improve documentation coverage and quality.",
+      "status": "planned",
+      "area": "documentation",
+      "priority": "medium",
+      "order": 10,
+      "tasks": [
+        {"description": "**Error type documentation** - More comprehensive docs on error types and handling patterns", "completed": false},
+        {"description": "**Provider-specific quirks** - Document provider differences and edge cases", "completed": false},
+        {"description": "**Migration guides** - Add guides for migrating from provider-specific SDKs", "completed": false}
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "title": "Infrastructure",
+      "description": "CI/CD and build infrastructure enhancements.",
+      "status": "planned",
+      "area": "infrastructure",
+      "priority": "medium",
+      "order": 11,
+      "tasks": [
+        {"description": "**CI/CD pipeline** - Add GitHub Actions workflows for automated testing, linting, and releases", "completed": false},
+        {"description": "**Coverage reporting** - Integrate coverage badges and reports into CI", "completed": false},
+        {"description": "**Cross-platform testing** - Verify builds on Linux, macOS, and Windows", "completed": false}
+      ]
+    },
+    {
+      "id": "code-quality",
+      "title": "Code Quality",
+      "description": "Code quality and consistency enhancements.",
+      "status": "planned",
+      "area": "testing",
+      "priority": "medium",
+      "order": 12,
+      "tasks": [
+        {"description": "**Consistent error wrapping** - Ensure all errors include sufficient context", "completed": false},
+        {"description": "**Interface compliance tests** - Add compile-time checks for provider interface compliance", "completed": false},
+        {"description": "**Benchmarks** - Add performance benchmarks for critical paths", "completed": false}
+      ]
+    },
+    {
+      "id": "embeddings",
+      "title": "Embeddings API",
+      "description": "Unified interface for text embeddings.",
+      "status": "future",
+      "area": "api",
+      "priority": "low",
+      "order": 13
+    },
+    {
+      "id": "structured-output",
+      "title": "Structured Output Validation",
+      "description": "JSON schema validation for responses.",
+      "status": "future",
+      "area": "api",
+      "priority": "low",
+      "order": 14
+    },
+    {
+      "id": "batch",
+      "title": "Batch Processing",
+      "description": "Efficient batch request handling.",
+      "status": "future",
+      "area": "api",
+      "priority": "low",
+      "order": 15
+    }
+  ],
+
+  "sections": [
+    {
+      "id": "design-decisions",
+      "title": "Design Decisions",
+      "order": 99,
+      "content": [
+        {"type": "text", "value": "The following design decisions guide feature prioritization:"},
+        {
+          "type": "table",
+          "headers": ["Question", "Decision", "Impact"],
+          "rows": [
+            ["Primary use case", "General-purpose SDK (chatbot, batch, real-time)", "Support all use cases equally; no single-use-case optimizations"],
+            ["Cost optimization", "High priority", "Elevated token counting and response caching to high priority"],
+            ["Uptime/reliability", "Critical", "Elevated circuit breaker to high priority; fallback providers already high"]
+          ]
+        }
+      ]
+    }
+  ]
+}
