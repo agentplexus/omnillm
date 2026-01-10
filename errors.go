@@ -12,6 +12,7 @@ var (
 	ErrUnsupportedProvider  = errors.New("unsupported provider")
 	ErrBedrockExternal      = errors.New("bedrock provider moved to github.com/agentplexus/omnillm-bedrock; use CustomProvider to inject it")
 	ErrInvalidConfiguration = errors.New("invalid configuration")
+	ErrNoProviders          = errors.New("at least one provider must be configured")
 	ErrEmptyAPIKey          = errors.New("API key cannot be empty")
 	ErrEmptyModel           = errors.New("model cannot be empty")
 	ErrEmptyMessages        = errors.New("messages cannot be empty")

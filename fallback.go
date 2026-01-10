@@ -13,9 +13,10 @@ import (
 )
 
 // ProviderConfig holds configuration for a single provider instance.
-// Used for configuring fallback providers.
+// Used in the Providers slice where index 0 is primary and 1+ are fallbacks.
 type ProviderConfig struct {
-	// Provider is the provider type (e.g., ProviderNameOpenAI)
+	// Provider is the provider type (e.g., ProviderNameOpenAI).
+	// Ignored if CustomProvider is set.
 	Provider ProviderName
 
 	// APIKey is the API key for the provider
@@ -35,6 +36,10 @@ type ProviderConfig struct {
 
 	// Extra holds provider-specific configuration
 	Extra map[string]any
+
+	// CustomProvider allows injecting a custom provider implementation.
+	// When set, Provider, APIKey, BaseURL, etc. are ignored.
+	CustomProvider provider.Provider
 }
 
 // FallbackProvider wraps multiple providers with fallback logic.
@@ -448,27 +453,22 @@ func (e *FallbackError) Unwrap() error {
 
 // buildProviderFromConfig creates a provider from a ProviderConfig
 func buildProviderFromConfig(config ProviderConfig) (provider.Provider, error) {
-	clientConfig := ClientConfig{
-		Provider:   config.Provider,
-		APIKey:     config.APIKey,
-		BaseURL:    config.BaseURL,
-		Region:     config.Region,
-		Timeout:    config.Timeout,
-		HTTPClient: config.HTTPClient,
-		Extra:      config.Extra,
+	// Check for custom provider injection first
+	if config.CustomProvider != nil {
+		return config.CustomProvider, nil
 	}
 
 	switch config.Provider {
 	case ProviderNameOpenAI:
-		return newOpenAIProvider(clientConfig)
+		return newOpenAIProvider(config)
 	case ProviderNameAnthropic:
-		return newAnthropicProvider(clientConfig)
+		return newAnthropicProvider(config)
 	case ProviderNameOllama:
-		return newOllamaProvider(clientConfig)
+		return newOllamaProvider(config)
 	case ProviderNameGemini:
-		return newGeminiProvider(clientConfig)
+		return newGeminiProvider(config)
 	case ProviderNameXAI:
-		return newXAIProvider(clientConfig)
+		return newXAIProvider(config)
 	case ProviderNameBedrock:
 		return nil, ErrBedrockExternal
 	default:

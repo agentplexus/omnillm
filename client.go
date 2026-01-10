@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net/http"
 	"strings"
 	"time"
 
@@ -27,53 +26,37 @@ type ChatClient struct {
 
 // ClientConfig holds configuration for creating a client
 type ClientConfig struct {
-	Provider ProviderName
-	APIKey   string
-	BaseURL  string
-	Region   string // For AWS Bedrock
+	// Providers is an ordered list of providers. Index 0 is the primary provider,
+	// and indices 1+ are fallback providers tried in order on retryable errors.
+	// This is the preferred way to configure providers.
+	//
+	// Example:
+	//   Providers: []ProviderConfig{
+	//       {Provider: ProviderNameOpenAI, APIKey: "openai-key"},      // Primary
+	//       {Provider: ProviderNameAnthropic, APIKey: "anthropic-key"}, // Fallback 1
+	//       {Provider: ProviderNameGemini, APIKey: "gemini-key"},       // Fallback 2
+	//   }
+	//
+	// For custom providers, use CustomProvider field in ProviderConfig:
+	//   Providers: []ProviderConfig{
+	//       {CustomProvider: myCustomProvider},
+	//   }
+	Providers []ProviderConfig
 
-	// Timeout sets the HTTP client timeout for API calls.
-	// If zero, providers use their default timeouts.
-	// Recommended: 300 * time.Second for reasoning models.
-	Timeout time.Duration
-
-	// HTTPClient is an optional HTTP client with custom transport (e.g., retry transport).
-	// If nil, providers will create clients using the Timeout value above.
-	// This can be used to add retry logic, tracing, or other middleware.
-	// Example with retry:
-	//   rt := retryhttp.NewWithOptions(retryhttp.WithMaxRetries(3))
-	//   config.HTTPClient = &http.Client{Transport: rt}
-	HTTPClient *http.Client
+	// CircuitBreakerConfig configures circuit breaker behavior for fallback providers.
+	// If nil (default), circuit breaker is disabled.
+	// When enabled, providers that fail repeatedly are temporarily skipped.
+	CircuitBreakerConfig *CircuitBreakerConfig
 
 	// Memory configuration (optional)
 	Memory       kvs.Client
 	MemoryConfig *MemoryConfig
-
-	// Direct provider injection (for 3rd party providers)
-	CustomProvider provider.Provider
 
 	// ObservabilityHook is called before/after LLM calls (optional)
 	ObservabilityHook ObservabilityHook
 
 	// Logger for internal logging (optional, defaults to null logger)
 	Logger *slog.Logger
-
-	// Provider-specific configurations can be added here
-	Extra map[string]any
-
-	// FallbackProviders is a list of providers to try if the primary provider fails.
-	// Fallback only occurs for retryable errors (rate limits, server errors, network errors).
-	// Auth errors and invalid requests do not trigger fallback.
-	// Example:
-	//   FallbackProviders: []ProviderConfig{
-	//       {Provider: ProviderNameAnthropic, APIKey: "..."},
-	//   }
-	FallbackProviders []ProviderConfig
-
-	// CircuitBreakerConfig configures circuit breaker behavior for fallback providers.
-	// If nil (default), circuit breaker is disabled.
-	// When enabled, providers that fail repeatedly are temporarily skipped.
-	CircuitBreakerConfig *CircuitBreakerConfig
 
 	// TokenEstimator enables pre-flight token estimation (optional).
 	// Use NewTokenEstimator() to create one with custom configuration.
@@ -97,50 +80,33 @@ type ClientConfig struct {
 
 // NewClient creates a new ChatClient based on the provider
 func NewClient(config ClientConfig) (*ChatClient, error) {
-	var prov provider.Provider
-	var err error
-
 	// Initialize logger (default to null logger if not provided)
 	logger := config.Logger
 	if logger == nil {
 		logger = slogutil.Null()
 	}
 
-	// Check for direct provider injection first
-	if config.CustomProvider != nil {
-		prov = config.CustomProvider
-	} else {
-		// Fall back to built-in providers
-		switch config.Provider {
-		case ProviderNameOpenAI:
-			prov, err = newOpenAIProvider(config)
-		case ProviderNameAnthropic:
-			prov, err = newAnthropicProvider(config)
-		case ProviderNameBedrock:
-			return nil, ErrBedrockExternal
-		case ProviderNameOllama:
-			prov, err = newOllamaProvider(config)
-		case ProviderNameGemini:
-			prov, err = newGeminiProvider(config)
-		case ProviderNameXAI:
-			prov, err = newXAIProvider(config)
-		default:
-			return nil, ErrUnsupportedProvider
-		}
-
-		if err != nil {
-			return nil, err
-		}
+	// Validate that at least one provider is configured
+	if len(config.Providers) == 0 {
+		return nil, ErrNoProviders
 	}
 
-	// Wrap with fallback provider if configured
-	if len(config.FallbackProviders) > 0 {
-		fallbacks := make([]provider.Provider, 0, len(config.FallbackProviders))
-		for i, fbConfig := range config.FallbackProviders {
+	// Build the primary provider from Providers[0]
+	primaryConfig := config.Providers[0]
+	prov, err := buildProviderFromConfig(primaryConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create primary provider (%s): %w",
+			primaryConfig.Provider, err)
+	}
+
+	// Wrap with fallback provider if more than one provider is configured
+	if len(config.Providers) > 1 {
+		fallbacks := make([]provider.Provider, 0, len(config.Providers)-1)
+		for i, fbConfig := range config.Providers[1:] {
 			fb, err := buildProviderFromConfig(fbConfig)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create fallback provider %d (%s): %w",
-					i, fbConfig.Provider, err)
+					i+1, fbConfig.Provider, err)
 			}
 			fallbacks = append(fallbacks, fb)
 		}
