@@ -81,23 +81,28 @@
           "commit": "e7dc833"
         },
         {
-          "description": "`ErrNoProviders` error for when `ClientConfig.Providers` is empty"
+          "description": "`ErrNoProviders` error for when `ClientConfig.Providers` is empty",
+          "commit": "0d06bd1"
         }
       ],
       "changed": [
         {
           "description": "`ClientConfig` refactored to use unified `Providers []ProviderConfig` slice (index 0 = primary, 1+ = fallbacks)",
-          "breaking": true
+          "breaking": true,
+          "commit": "0d06bd1"
         },
         {
           "description": "Removed redundant `Provider`, `APIKey`, `BaseURL`, `Region`, `Timeout`, `HTTPClient`, `CustomProvider`, `Extra`, `FallbackProviders` fields from `ClientConfig`",
-          "breaking": true
+          "breaking": true,
+          "commit": "0d06bd1"
         },
         {
-          "description": "`ProviderConfig` now supports `CustomProvider` field for 3rd party provider injection"
+          "description": "`ProviderConfig` now supports `CustomProvider` field for 3rd party provider injection",
+          "commit": "0d06bd1"
         },
         {
-          "description": "Provider constructors refactored to accept `ProviderConfig` instead of `ClientConfig`"
+          "description": "Provider constructors refactored to accept `ProviderConfig` instead of `ClientConfig`",
+          "commit": "0d06bd1"
         },
         {
           "description": "`CreateChatCompletion` now supports optional token validation and response caching",
@@ -142,18 +147,22 @@
       "date": "2026-01-04",
       "added": [
         {
-          "description": "Claude 4.5 model family: `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929`, `claude-haiku-4-5-20251001`"
+          "description": "Claude 4.5 model family: `claude-opus-4-5-20251101`, `claude-sonnet-4-5-20250929`, `claude-haiku-4-5-20251001`",
+          "commit": "d0d5eb7"
         },
         {
-          "description": "`ClientConfig.Timeout` field for configurable HTTP client timeout (recommended 300s for reasoning models)"
+          "description": "`ClientConfig.Timeout` field for configurable HTTP client timeout (recommended 300s for reasoning models)",
+          "commit": "d0d5eb7"
         },
         {
-          "description": "Marp presentation and GitHub Pages HTML documentation"
+          "description": "Marp presentation and GitHub Pages HTML documentation",
+          "commit": "823effa"
         }
       ],
       "changed": [
         {
-          "description": "HTTP client handling refactored with `getHTTPClient()` helper integrating both `HTTPClient` and `Timeout` configurations"
+          "description": "HTTP client handling refactored with `getHTTPClient()` helper integrating both `HTTPClient` and `Timeout` configurations",
+          "commit": "d0d5eb7"
         }
       ]
     },
@@ -163,10 +172,12 @@
       "changed": [
         {
           "description": "Module renamed from `github.com/grokify/metallm` to `github.com/agentplexus/omnillm`",
-          "breaking": true
+          "breaking": true,
+          "commit": "89059fb"
         },
         {
-          "description": "Dependencies updated via `go mod`"
+          "description": "Dependencies updated via `go mod`",
+          "commit": "459d7b0"
         }
       ]
     },
@@ -175,13 +186,15 @@
       "date": "2025-12-22",
       "added": [
         {
-          "description": "ROADMAP.md with project direction"
+          "description": "ROADMAP.md with project direction",
+          "commit": "424b1f7"
         }
       ],
       "changed": [
         {
           "description": "Module renamed from `github.com/grokify/fluxllm` to `github.com/grokify/metallm` for consistency with `metaserp`",
-          "breaking": true
+          "breaking": true,
+          "commit": "803e617"
         }
       ]
     },
@@ -191,7 +204,8 @@
       "changed": [
         {
           "description": "Bedrock provider moved to standalone SDK at `github.com/grokify/fluxllm-bedrock`",
-          "breaking": true
+          "breaking": true,
+          "commit": "46126de"
         }
       ]
     },
@@ -200,33 +214,41 @@
       "date": "2025-12-21",
       "added": [
         {
-          "description": "`ObservabilityHook` interface for non-invasive tracing, logging, and metrics integration"
+          "description": "`ObservabilityHook` interface for non-invasive tracing, logging, and metrics integration",
+          "commit": "609de92"
         },
         {
-          "description": "`LLMCallInfo` with unique `CallID` for correlating hook calls in concurrent scenarios"
+          "description": "`LLMCallInfo` with unique `CallID` for correlating hook calls in concurrent scenarios",
+          "commit": "609de92"
         },
         {
-          "description": "Injectable `*slog.Logger` with null logger default for structured logging"
+          "description": "Injectable `*slog.Logger` with null logger default for structured logging",
+          "commit": "c72feb3"
         },
         {
-          "description": "Context-aware logging via `slogutil.ContextWithLogger` for request-scoped correlation"
+          "description": "Context-aware logging via `slogutil.ContextWithLogger` for request-scoped correlation",
+          "commit": "c72feb3"
         },
         {
-          "description": "`ClientConfig.HTTPClient` for custom HTTP transports (retry, tracing, metrics)"
+          "description": "`ClientConfig.HTTPClient` for custom HTTP transports (retry, tracing, metrics)",
+          "commit": "609de92"
         },
         {
-          "description": "Retry with exponential backoff support via `mogo/net/http/retryhttp`"
+          "description": "Retry with exponential backoff support via `mogo/net/http/retryhttp`",
+          "commit": "609de92"
         }
       ],
       "changed": [
         {
           "description": "Module renamed from `github.com/grokify/gollm` to `github.com/grokify/fluxllm`",
-          "breaking": true
+          "breaking": true,
+          "commit": "f65e355"
         }
       ],
       "fixed": [
         {
-          "description": "Memory-aware methods (`CreateChatCompletionWithMemory`, `CreateChatCompletionStreamWithMemory`) now properly invoke observability hooks"
+          "description": "Memory-aware methods (`CreateChatCompletionWithMemory`, `CreateChatCompletionStreamWithMemory`) now properly invoke observability hooks",
+          "commit": "fdf42ac"
         }
       ]
     },
@@ -235,12 +257,14 @@
       "date": "2025-12-15",
       "added": [
         {
-          "description": "Model constants for all providers in `models/` package"
+          "description": "Model constants for all providers in `models/` package",
+          "commit": "fe9d331"
         }
       ],
       "changed": [
         {
-          "description": "README.md updated for v0.6.0 Grok models documentation"
+          "description": "README.md updated for v0.6.0 Grok models documentation",
+          "commit": "dc68f9c"
         }
       ]
     },
@@ -249,41 +273,52 @@
       "date": "2025-12-14",
       "added": [
         {
-          "description": "X.AI Grok provider with full streaming support and Grok 4.1/4/3/2 model families"
+          "description": "X.AI Grok provider with full streaming support and Grok 4.1/4/3/2 model families",
+          "commit": "65917c8"
         },
         {
-          "description": "Anthropic native streaming via Server-Sent Events (SSE)"
+          "description": "Anthropic native streaming via Server-Sent Events (SSE)",
+          "commit": "5f430f5"
         },
         {
-          "description": "`ProviderMetadata` field in `ChatCompletionResponse` and `ChatCompletionChunk` for preserving provider-specific information"
+          "description": "`ProviderMetadata` field in `ChatCompletionResponse` and `ChatCompletionChunk` for preserving provider-specific information",
+          "commit": "a509740"
         },
         {
-          "description": "Comprehensive test suite with 44 automated tests (unit + integration)"
+          "description": "Comprehensive test suite with 44 automated tests (unit + integration)",
+          "commit": "6514343"
         },
         {
-          "description": "Mock KVS infrastructure for testing conversation memory"
+          "description": "Mock KVS infrastructure for testing conversation memory",
+          "commit": "6514343"
         },
         {
-          "description": "Anthropic streaming example in `examples/anthropic_streaming`"
+          "description": "Anthropic streaming example in `examples/anthropic_streaming`",
+          "commit": "5f430f5"
         },
         {
-          "description": "X.AI usage examples in `examples/xai`"
+          "description": "X.AI usage examples in `examples/xai`",
+          "commit": "65917c8"
         }
       ],
       "changed": [
         {
-          "description": "Replaced `interface{}` with `any` throughout codebase (Go 1.18+ convention)"
+          "description": "Replaced `interface{}` with `any` throughout codebase (Go 1.18+ convention)",
+          "commit": "b9ed829"
         }
       ],
       "fixed": [
         {
-          "description": "Anthropic streaming now fully functional with proper SSE parsing and event type handling"
+          "description": "Anthropic streaming now fully functional with proper SSE parsing and event type handling",
+          "commit": "5f430f5"
         },
         {
-          "description": "Ineffectual assignment in `anthropic/anthropic.go`"
+          "description": "Ineffectual assignment in `anthropic/anthropic.go`",
+          "commit": "0c438f0"
         },
         {
-          "description": "All `golangci-lint` issues resolved"
+          "description": "All `golangci-lint` issues resolved",
+          "commit": "0c438f0"
         }
       ]
     },
@@ -292,13 +327,16 @@
       "date": "2025-12-14",
       "changed": [
         {
-          "description": "CI Go versions updated"
+          "description": "CI Go versions updated",
+          "commit": "d8763ee"
         },
         {
-          "description": "Dependencies updated: `actions/setup-go` 5→6, `github/codeql-action` 3→4, `golangci/golangci-lint-action` 8→9, `actions/checkout` 5→6"
+          "description": "Dependencies updated: `actions/setup-go` 5→6, `github/codeql-action` 3→4, `golangci/golangci-lint-action` 8→9, `actions/checkout` 5→6",
+          "commit": "e515829"
         },
         {
-          "description": "Go module dependencies updated: `github.com/grokify/sogo` 0.12.1→0.12.7, `github.com/aws/aws-sdk-go-v2/config` 1.31.6→1.31.13"
+          "description": "Go module dependencies updated: `github.com/grokify/sogo` 0.12.1→0.12.7, `github.com/aws/aws-sdk-go-v2/config` 1.31.6→1.31.13",
+          "commit": "e515829"
         }
       ]
     },
@@ -307,17 +345,20 @@
       "date": "2025-09-07",
       "added": [
         {
-          "description": "Google Gemini provider with chat and streaming support"
+          "description": "Google Gemini provider with chat and streaming support",
+          "commit": "8aebbaf"
         }
       ],
       "changed": [
         {
-          "description": "README.md documentation formatting improvements"
+          "description": "README.md documentation formatting improvements",
+          "commit": "6cf247c"
         }
       ],
       "fixed": [
         {
-          "description": "Various linting issues resolved"
+          "description": "Various linting issues resolved",
+          "commit": "f0d0c78"
         }
       ]
     },
@@ -326,22 +367,27 @@
       "date": "2025-08-31",
       "added": [
         {
-          "description": "Custom external provider support via `Provider` interface injection"
+          "description": "Custom external provider support via `Provider` interface injection",
+          "commit": "2406f7b"
         },
         {
-          "description": "Custom provider example in `examples/custom_provider`"
+          "description": "Custom provider example in `examples/custom_provider`",
+          "commit": "24c557d"
         }
       ],
       "changed": [
         {
           "description": "Major provider architecture refactor (3 phases): internal providers moved to provider-specific directories",
-          "breaking": true
+          "breaking": true,
+          "commit": "1452c4f"
         },
         {
-          "description": "Provider constants moved to `constants.go`"
+          "description": "Provider constants moved to `constants.go`",
+          "commit": "5c9f78b"
         },
         {
-          "description": "README.md updated with Ollama in architecture section"
+          "description": "README.md updated with Ollama in architecture section",
+          "commit": "8cb1c8d"
         }
       ]
     },
@@ -350,26 +396,32 @@
       "date": "2025-08-31",
       "added": [
         {
-          "description": "Ollama provider for local LLM inference"
+          "description": "Ollama provider for local LLM inference",
+          "commit": "3fb07e7"
         },
         {
-          "description": "Memory documentation"
+          "description": "Memory documentation",
+          "commit": "ac26c1a"
         },
         {
-          "description": "Ollama example in `examples/providers_demo`"
+          "description": "Ollama example in `examples/providers_demo`",
+          "commit": "3da55df"
         }
       ],
       "changed": [
         {
-          "description": "`examples/basic` refactored to eliminate code duplication"
+          "description": "`examples/basic` refactored to eliminate code duplication",
+          "commit": "28459c8"
         },
         {
-          "description": "Dependencies updated: AWS SDK Bedrock Runtime 1.37.1→1.38.0, AWS SDK Config 1.31.2→1.31.5, sogo 0.12.0→0.12.1"
+          "description": "Dependencies updated: AWS SDK Bedrock Runtime 1.37.1→1.38.0, AWS SDK Config 1.31.2→1.31.5, sogo 0.12.0→0.12.1",
+          "commit": "59083a6"
         }
       ],
       "fixed": [
         {
-          "description": "Linting issues: EOF newline compliance"
+          "description": "Linting issues: EOF newline compliance",
+          "commit": "216d166"
         }
       ]
     },
@@ -378,24 +430,30 @@
       "date": "2025-08-26",
       "added": [
         {
-          "description": "Conversation memory feature for stateful interactions"
+          "description": "Conversation memory feature for stateful interactions",
+          "commit": "e6cad19"
         },
         {
-          "description": "CodeQL SAST security scanning in CI"
+          "description": "CodeQL SAST security scanning in CI",
+          "commit": "cc96214"
         },
         {
-          "description": "Model constants in dedicated file"
+          "description": "Model constants in dedicated file",
+          "commit": "ba6c471"
         }
       ],
       "changed": [
         {
-          "description": "Constants reorganized into `constants.go`"
+          "description": "Constants reorganized into `constants.go`",
+          "commit": "ba6c471"
         },
         {
-          "description": "README.md formatting improvements"
+          "description": "README.md formatting improvements",
+          "commit": "27d754f"
         },
         {
-          "description": "golangci-lint configuration updated for false positives"
+          "description": "golangci-lint configuration updated for false positives",
+          "commit": "4047541"
         }
       ]
     },
@@ -404,7 +462,8 @@
       "date": "2025-08-26",
       "changed": [
         {
-          "description": "README.md updated with correct `pkg.go.dev` link"
+          "description": "README.md updated with correct `pkg.go.dev` link",
+          "commit": "b618d78"
         }
       ]
     },
@@ -413,25 +472,32 @@
       "date": "2025-08-25",
       "added": [
         {
-          "description": "Initial release with unified LLM SDK"
+          "description": "Initial release with unified LLM SDK",
+          "commit": "3f6f4fd"
         },
         {
-          "description": "OpenAI provider with GPT model support"
+          "description": "OpenAI provider with GPT model support",
+          "commit": "3f6f4fd"
         },
         {
-          "description": "Anthropic Claude provider"
+          "description": "Anthropic Claude provider",
+          "commit": "3f6f4fd"
         },
         {
-          "description": "AWS Bedrock provider"
+          "description": "AWS Bedrock provider",
+          "commit": "3f6f4fd"
         },
         {
-          "description": "Chat completions API with synchronous and streaming support"
+          "description": "Chat completions API with synchronous and streaming support",
+          "commit": "3f6f4fd"
         },
         {
-          "description": "CI/CD workflows: golangci-lint, dependabot, CodeQL"
+          "description": "CI/CD workflows: golangci-lint, dependabot, CodeQL",
+          "commit": "5c67463"
         },
         {
-          "description": "MIT License"
+          "description": "MIT License",
+          "commit": "075eafd"
         }
       ]
     }
