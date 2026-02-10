@@ -5,7 +5,7 @@ go 1.24.5
 require (
 	github.com/grokify/mogo v0.73.0
 	github.com/grokify/sogo v0.13.0
-	google.golang.org/genai v1.45.0
+	google.golang.org/genai v1.46.0
 )
 
 require (
