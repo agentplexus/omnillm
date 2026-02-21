@@ -32,7 +32,7 @@ func main() {
 	// OpenAI client (won't work without real API key)
 	openaiClient, err := omnillm.NewClient(omnillm.ClientConfig{
 		Providers: []omnillm.ProviderConfig{
-			{Provider: omnillm.ProviderNameOpenAI, APIKey: "demo-openai-key"},
+			{Provider: omnillm.ProviderNameOpenAI, APIKey: "demo-openai-key"}, //nolint:gosec // G101: demo credential for example code
 		},
 	})
 	if err != nil {
@@ -45,7 +45,7 @@ func main() {
 	// Anthropic client (won't work without real API key)
 	anthropicClient, err := omnillm.NewClient(omnillm.ClientConfig{
 		Providers: []omnillm.ProviderConfig{
-			{Provider: omnillm.ProviderNameAnthropic, APIKey: "demo-anthropic-key"},
+			{Provider: omnillm.ProviderNameAnthropic, APIKey: "demo-anthropic-key"}, //nolint:gosec // G101: demo credential for example code
 		},
 	})
 	if err != nil {

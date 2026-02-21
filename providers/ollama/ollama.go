@@ -61,7 +61,7 @@ func (c *Client) CreateCompletion(ctx context.Context, req *Request) (*Response,
 
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.client.Do(httpReq)
+	resp, err := c.client.Do(httpReq) //nolint:gosec // G704: baseURL is configured at client init, not user-controlled per-request
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
@@ -107,7 +107,7 @@ func (c *Client) CreateCompletionStream(ctx context.Context, req *Request) (*Str
 
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.client.Do(httpReq)
+	resp, err := c.client.Do(httpReq) //nolint:gosec // G704: baseURL is configured at client init, not user-controlled per-request
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}

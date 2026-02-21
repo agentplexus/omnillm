@@ -62,7 +62,7 @@ func (c *Client) CreateCompletion(ctx context.Context, req *Request) (*Response,
 
 	c.setHeaders(httpReq)
 
-	resp, err := c.client.Do(httpReq)
+	resp, err := c.client.Do(httpReq) //nolint:gosec // G704: baseURL is configured at client init, not user-controlled per-request
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
@@ -105,7 +105,7 @@ func (c *Client) CreateCompletionStream(ctx context.Context, req *Request) (*Str
 	c.setHeaders(httpReq)
 	httpReq.Header.Set("Accept", "text/event-stream")
 
-	resp, err := c.client.Do(httpReq)
+	resp, err := c.client.Do(httpReq) //nolint:gosec // G704: baseURL is configured at client init, not user-controlled per-request
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}

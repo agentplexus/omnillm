@@ -20,7 +20,7 @@ type ProviderConfig struct {
 	Provider ProviderName
 
 	// APIKey is the API key for the provider
-	APIKey string
+	APIKey string //nolint:gosec // G117: config field for API key, not a hardcoded credential
 
 	// BaseURL is an optional custom base URL
 	BaseURL string
