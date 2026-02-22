@@ -1,10 +1,27 @@
 {
-  "ir_version": "1.0",
+  "irVersion": "1.0",
   "project": "omnillm",
   "repository": "https://github.com/agentplexus/omnillm",
-  "generated_at": "2026-01-10T00:00:00Z",
-  "unreleased": {},
+  "versioning": "semver",
+  "commitConvention": "conventional",
   "releases": [
+    {
+      "version": "v0.12.0",
+      "date": "2026-02-22",
+      "highlights": [
+        { "description": "Tool/function calling support for OpenAI provider enables agentic workflows" }
+      ],
+      "added": [
+        { "description": "`Tool`, `ToolSpec`, `ToolCall`, `ToolFunction` types for tool calling", "commit": "06824f2" },
+        { "description": "`Tools` and `ToolChoice` fields in `ChatCompletionRequest`", "commit": "06824f2" },
+        { "description": "`ToolCallID` and `ToolCalls` fields in `Message`", "commit": "06824f2" },
+        { "description": "Conversion between unified tool format and OpenAI format", "commit": "06824f2" }
+      ],
+      "documentation": [
+        { "description": "MkDocs documentation site with Material theme", "commit": "3bc816c" },
+        { "description": "Organized release notes in docs/releases/", "commit": "3bc816c" }
+      ]
+    },
     {
       "version": "v0.11.0",
       "date": "2026-01-10",
