@@ -1,0 +1,81 @@
+site_name: OmniLLM
+site_description: Unified Go SDK for Large Language Models
+site_url: https://agentplexus.github.io/omnillm
+repo_url: https://github.com/agentplexus/omnillm
+repo_name: agentplexus/omnillm
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Configuration: getting-started/configuration.md
+  - Providers:
+      - Overview: providers/index.md
+      - OpenAI: providers/openai.md
+      - Anthropic: providers/anthropic.md
+      - Google Gemini: providers/gemini.md
+      - X.AI (Grok): providers/xai.md
+      - Ollama: providers/ollama.md
+      - AWS Bedrock: providers/bedrock.md
+      - Custom Providers: providers/custom.md
+  - Features:
+      - Streaming: features/streaming.md
+      - Conversation Memory: features/memory.md
+      - Tool Calling: features/tools.md
+      - Fallback & Circuit Breaker: features/fallback.md
+      - Token Estimation: features/tokens.md
+      - Response Caching: features/caching.md
+      - Observability: features/observability.md
+      - Retry & Backoff: features/retry.md
+  - Architecture: architecture.md
+  - Testing: testing.md
+  - API Reference: https://pkg.go.dev/github.com/agentplexus/omnillm
+  - Releases:
+      - Changelog: releases/changelog.md
+      - v0.12.0: releases/v0.12.0.md
+      - v0.11.0: releases/v0.11.0.md
+      - v0.10.0: releases/v0.10.0.md
+      - v0.9.0: releases/v0.9.0.md
+      - v0.8.0: releases/v0.8.0.md
+      - v0.7.0: releases/v0.7.0.md
+      - v0.6.0: releases/v0.6.0.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/agentplexus/omnillm

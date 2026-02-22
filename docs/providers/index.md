@@ -1,0 +1,49 @@
+# Providers
+
+OmniLLM supports multiple LLM providers through a unified interface. Each provider is configured via `ProviderConfig` and implements the same `Provider` interface.
+
+## Built-in Providers
+
+| Provider | Package | Description |
+|----------|---------|-------------|
+| [OpenAI](openai.md) | Built-in | GPT-5, GPT-4o, GPT-4-turbo, GPT-3.5-turbo |
+| [Anthropic](anthropic.md) | Built-in | Claude Opus 4, Sonnet 4, Claude 3.x series |
+| [Google Gemini](gemini.md) | Built-in | Gemini 2.5/1.5 Pro and Flash |
+| [X.AI](xai.md) | Built-in | Grok 4, Grok 3, 2M context window |
+| [Ollama](ollama.md) | Built-in | Local models (Llama, Mistral, etc.) |
+
+## External Providers
+
+Some providers with heavy SDK dependencies are available as separate modules:
+
+| Provider | Module | Why External |
+|----------|--------|--------------|
+| [AWS Bedrock](bedrock.md) | `github.com/agentplexus/omnillm-bedrock` | AWS SDK v2 adds 17+ transitive dependencies |
+
+## Multi-Provider Configuration
+
+Configure multiple providers for fallback support:
+
+```go
+client, err := omnillm.NewClient(omnillm.ClientConfig{
+    Providers: []omnillm.ProviderConfig{
+        {Provider: omnillm.ProviderNameOpenAI, APIKey: "openai-key"},       // Primary
+        {Provider: omnillm.ProviderNameAnthropic, APIKey: "anthropic-key"}, // Fallback 1
+        {Provider: omnillm.ProviderNameGemini, APIKey: "gemini-key"},       // Fallback 2
+    },
+})
+
+// If OpenAI fails with a retryable error, automatically tries Anthropic, then Gemini
+response, err := client.CreateChatCompletion(ctx, request)
+```
+
+## Model Support Summary
+
+| Provider | Models | Context Window | Features |
+|----------|--------|----------------|----------|
+| OpenAI | GPT-5, GPT-4.1, GPT-4o | 128K-200K | Chat, Streaming, Tools |
+| Anthropic | Claude Opus 4, Sonnet 4 | 200K | Chat, Streaming, System |
+| Gemini | Gemini 2.5 Pro/Flash | 1M-2M | Chat, Streaming |
+| X.AI | Grok 4, Grok 3 | 128K-2M | Chat, Streaming, Tools |
+| Ollama | Llama 3, Mistral | Varies | Chat, Streaming, Local |
+| Bedrock | Claude, Titan | Varies | Chat |
