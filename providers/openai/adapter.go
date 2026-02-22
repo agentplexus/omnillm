@@ -50,18 +50,57 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 		}
 	}
 
+	// Convert tools
+	for _, tool := range req.Tools {
+		openaiReq.Tools = append(openaiReq.Tools, Tool{
+			Type: tool.Type,
+			Function: ToolSpec{
+				Name:        tool.Function.Name,
+				Description: tool.Function.Description,
+				Parameters:  tool.Function.Parameters,
+			},
+		})
+	}
+	openaiReq.ToolChoice = req.ToolChoice
+
 	// Convert messages
 	for _, msg := range req.Messages {
-		openaiReq.Messages = append(openaiReq.Messages, Message{
-			Role:    string(msg.Role),
-			Content: msg.Content,
-			Name:    msg.Name,
-		})
+		openaiMsg := Message{
+			Role:       string(msg.Role),
+			Content:    msg.Content,
+			Name:       msg.Name,
+			ToolCallID: msg.ToolCallID,
+		}
+		// Convert tool calls if present
+		for _, tc := range msg.ToolCalls {
+			openaiMsg.ToolCalls = append(openaiMsg.ToolCalls, ToolCall{
+				ID:   tc.ID,
+				Type: tc.Type,
+				Function: ToolFunction{
+					Name:      tc.Function.Name,
+					Arguments: tc.Function.Arguments,
+				},
+			})
+		}
+		openaiReq.Messages = append(openaiReq.Messages, openaiMsg)
 	}
 
 	resp, err := p.client.CreateCompletion(ctx, openaiReq)
 	if err != nil {
 		return nil, err
+	}
+
+	// Convert tool calls from response
+	var toolCalls []provider.ToolCall
+	for _, tc := range resp.Choices[0].Message.ToolCalls {
+		toolCalls = append(toolCalls, provider.ToolCall{
+			ID:   tc.ID,
+			Type: tc.Type,
+			Function: provider.ToolFunction{
+				Name:      tc.Function.Name,
+				Arguments: tc.Function.Arguments,
+			},
+		})
 	}
 
 	// Convert back to unified format
@@ -74,8 +113,9 @@ func (p *Provider) CreateChatCompletion(ctx context.Context, req *provider.ChatC
 			{
 				Index: 0,
 				Message: provider.Message{
-					Role:    provider.Role(resp.Choices[0].Message.Role),
-					Content: resp.Choices[0].Message.Content,
+					Role:      provider.Role(resp.Choices[0].Message.Role),
+					Content:   resp.Choices[0].Message.Content,
+					ToolCalls: toolCalls,
 				},
 				FinishReason: resp.Choices[0].FinishReason,
 			},

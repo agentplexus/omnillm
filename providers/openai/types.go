@@ -13,11 +13,39 @@ type Request struct {
 	FrequencyPenalty *float64        `json:"frequency_penalty,omitempty"`
 	LogitBias        map[string]int  `json:"logit_bias,omitempty"`
 	User             *string         `json:"user,omitempty"`
+	Tools            []Tool          `json:"tools,omitempty"`
+	ToolChoice       any             `json:"tool_choice,omitempty"`
 	Seed             *int            `json:"seed,omitempty"`
 	N                *int            `json:"n,omitempty"`
 	ResponseFormat   *ResponseFormat `json:"response_format,omitempty"`
 	Logprobs         *bool           `json:"logprobs,omitempty"`
 	TopLogprobs      *int            `json:"top_logprobs,omitempty"`
+}
+
+// Tool represents a tool that can be called
+type Tool struct {
+	Type     string   `json:"type"`
+	Function ToolSpec `json:"function"`
+}
+
+// ToolSpec defines a tool specification
+type ToolSpec struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Parameters  any    `json:"parameters"`
+}
+
+// ToolCall represents a tool function call
+type ToolCall struct {
+	ID       string       `json:"id"`
+	Type     string       `json:"type"`
+	Function ToolFunction `json:"function"`
+}
+
+// ToolFunction represents the function being called
+type ToolFunction struct {
+	Name      string `json:"name"`
+	Arguments string `json:"arguments"`
 }
 
 // ResponseFormat specifies the format of the response
@@ -27,9 +55,11 @@ type ResponseFormat struct {
 
 // Message represents a chat message
 type Message struct {
-	Role    string  `json:"role"`
-	Content string  `json:"content"`
-	Name    *string `json:"name,omitempty"`
+	Role       string     `json:"role"`
+	Content    string     `json:"content"`
+	Name       *string    `json:"name,omitempty"`
+	ToolCallID *string    `json:"tool_call_id,omitempty"`
+	ToolCalls  []ToolCall `json:"tool_calls,omitempty"`
 }
 
 // Response represents an OpenAI chat completion response
