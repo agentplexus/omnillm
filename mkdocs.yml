@@ -1,8 +1,8 @@
 site_name: OmniLLM
 site_description: Unified Go SDK for Large Language Models
-site_url: https://agentplexus.github.io/omnillm
-repo_url: https://github.com/agentplexus/omnillm
-repo_name: agentplexus/omnillm
+site_url: https://plexusone.github.io/omnillm
+repo_url: https://github.com/plexusone/omnillm
+repo_name: plexusone/omnillm
 
 theme:
   name: material
@@ -64,9 +64,10 @@ nav:
       - Retry & Backoff: features/retry.md
   - Architecture: architecture.md
   - Testing: testing.md
-  - API Reference: https://pkg.go.dev/github.com/agentplexus/omnillm
+  - API Reference: https://pkg.go.dev/github.com/plexusone/omnillm
   - Releases:
       - Changelog: releases/changelog.md
+      - v0.13.0: releases/v0.13.0.md
       - v0.12.0: releases/v0.12.0.md
       - v0.11.0: releases/v0.11.0.md
       - v0.10.0: releases/v0.10.0.md
@@ -78,4 +79,4 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/agentplexus/omnillm
+      link: https://github.com/plexusone/omnillm

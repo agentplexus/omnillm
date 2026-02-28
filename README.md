@@ -76,7 +76,7 @@ omnillm/
 ### Installation
 
 ```bash
-go get github.com/agentplexus/omnillm
+go get github.com/plexusone/omnillm
 ```
 
 ### Basic Usage
@@ -89,7 +89,7 @@ import (
     "fmt"
     "log"
     
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
 )
 
 func main() {
@@ -171,13 +171,13 @@ client, err := omnillm.NewClient(omnillm.ClientConfig{
 AWS Bedrock is available as an external module to avoid pulling AWS SDK dependencies for users who don't need it.
 
 ```bash
-go get github.com/agentplexus/omnillm-bedrock
+go get github.com/plexusone/omnillm-bedrock
 ```
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
-    "github.com/agentplexus/omnillm-bedrock"
+    "github.com/plexusone/omnillm"
+    "github.com/plexusone/omnillm-bedrock"
 )
 
 // Create the Bedrock provider
@@ -228,14 +228,14 @@ Some providers with heavy SDK dependencies are available as separate modules to 
 
 | Provider | Module | Why External |
 |----------|--------|--------------|
-| AWS Bedrock | [github.com/agentplexus/omnillm-bedrock](https://github.com/agentplexus/omnillm-bedrock) | AWS SDK v2 adds 17+ transitive dependencies |
+| AWS Bedrock | [github.com/plexusone/omnillm-bedrock](https://github.com/plexusone/omnillm-bedrock) | AWS SDK v2 adds 17+ transitive dependencies |
 
 ### Using External Providers
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
-    "github.com/agentplexus/omnillm-bedrock"  // or your custom provider
+    "github.com/plexusone/omnillm"
+    "github.com/plexusone/omnillm-bedrock"  // or your custom provider
 )
 
 // Create the external provider
@@ -257,7 +257,7 @@ client, err := omnillm.NewClient(omnillm.ClientConfig{
 External providers implement the `provider.Provider` interface:
 
 ```go
-import "github.com/agentplexus/omnillm/provider"
+import "github.com/plexusone/omnillm/provider"
 
 type MyProvider struct{}
 
@@ -273,7 +273,7 @@ func (p *MyProvider) CreateChatCompletionStream(ctx context.Context, req *provid
 }
 ```
 
-See the [omnillm-bedrock](https://github.com/agentplexus/omnillm-bedrock) source code as a reference implementation.
+See the [omnillm-bedrock](https://github.com/plexusone/omnillm-bedrock) source code as a reference implementation.
 
 ## 📡 Streaming Example
 
@@ -808,7 +808,7 @@ func TestAnthropicIntegration_Streaming(t *testing.T) {
 OmniLLM provides a mock KVS implementation for testing memory functionality:
 
 ```go
-import omnillmtest "github.com/agentplexus/omnillm/testing"
+import omnillmtest "github.com/plexusone/omnillm/testing"
 
 // Create mock KVS for testing
 mockKVS := omnillmtest.NewMockKVS()
@@ -930,7 +930,7 @@ import (
     "log/slog"
     "os"
 
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
 )
 
 // Use a custom logger
@@ -959,7 +959,7 @@ OmniLLM supports request-scoped logging via context. This allows you to attach t
 import (
     "log/slog"
 
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
     "github.com/grokify/mogo/log/slogutil"
 )
 
@@ -988,7 +988,7 @@ import (
     "net/http"
     "time"
 
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
     "github.com/grokify/mogo/net/http/retryhttp"
 )
 
@@ -1049,7 +1049,7 @@ package gemini
 
 import (
     "context"
-    "github.com/agentplexus/omnillm/provider"
+    "github.com/plexusone/omnillm/provider"
 )
 
 // Step 1: HTTP Client (like providers/openai/openai.go)
@@ -1089,7 +1089,7 @@ func (p *Provider) Name() string { return "gemini" }
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
     "github.com/yourname/omnillm-gemini"
 )
 
@@ -1147,7 +1147,7 @@ To add a built-in provider to the core library, follow the same structure as exi
 | Ollama | Llama 3, Mistral, CodeLlama, Gemma, Qwen2.5, DeepSeek-Coder | Chat, Streaming, Local inference |
 | Bedrock* | Claude models, Titan models | Chat, Multiple model families |
 
-*Available as [external module](https://github.com/agentplexus/omnillm-bedrock)
+*Available as [external module](https://github.com/plexusone/omnillm-bedrock)
 
 ## 🚨 Error Handling
 
@@ -1202,15 +1202,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for the Go and AI community**
 
- [build-status-svg]: https://github.com/agentplexus/omnillm/actions/workflows/ci.yaml/badge.svg?branch=main
- [build-status-url]: https://github.com/agentplexus/omnillm/actions/workflows/ci.yaml
- [lint-status-svg]: https://github.com/agentplexus/omnillm/actions/workflows/lint.yaml/badge.svg?branch=main
- [lint-status-url]: https://github.com/agentplexus/omnillm/actions/workflows/lint.yaml
- [goreport-svg]: https://goreportcard.com/badge/github.com/agentplexus/omnillm
- [goreport-url]: https://goreportcard.com/report/github.com/agentplexus/omnillm
- [docs-godoc-svg]: https://pkg.go.dev/badge/github.com/agentplexus/omnillm
- [docs-godoc-url]: https://pkg.go.dev/github.com/agentplexus/omnillm
+ [build-status-svg]: https://github.com/plexusone/omnillm/actions/workflows/ci.yaml/badge.svg?branch=main
+ [build-status-url]: https://github.com/plexusone/omnillm/actions/workflows/ci.yaml
+ [lint-status-svg]: https://github.com/plexusone/omnillm/actions/workflows/lint.yaml/badge.svg?branch=main
+ [lint-status-url]: https://github.com/plexusone/omnillm/actions/workflows/lint.yaml
+ [goreport-svg]: https://goreportcard.com/badge/github.com/plexusone/omnillm
+ [goreport-url]: https://goreportcard.com/report/github.com/plexusone/omnillm
+ [docs-godoc-svg]: https://pkg.go.dev/badge/github.com/plexusone/omnillm
+ [docs-godoc-url]: https://pkg.go.dev/github.com/plexusone/omnillm
  [license-svg]: https://img.shields.io/badge/license-MIT-blue.svg
- [license-url]: https://github.com/agentplexus/omnillm/blob/master/LICENSE
- [used-by-svg]: https://sourcegraph.com/github.com/agentplexus/omnillm/-/badge.svg
- [used-by-url]: https://sourcegraph.com/github.com/agentplexus/omnillm?badge
+ [license-url]: https://github.com/plexusone/omnillm/blob/master/LICENSE
+ [used-by-svg]: https://sourcegraph.com/github.com/plexusone/omnillm/-/badge.svg
+ [used-by-url]: https://sourcegraph.com/github.com/plexusone/omnillm?badge

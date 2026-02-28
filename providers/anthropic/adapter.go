@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // Provider represents the Anthropic provider adapter

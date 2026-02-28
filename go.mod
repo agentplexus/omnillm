@@ -1,4 +1,4 @@
-module github.com/agentplexus/omnillm
+module github.com/plexusone/omnillm
 
 go 1.25.0
 

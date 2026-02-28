@@ -10,7 +10,7 @@ import (
 	"github.com/grokify/mogo/log/slogutil"
 	"github.com/grokify/sogo/database/kvs"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // ChatClient is the main client interface that wraps a Provider

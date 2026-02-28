@@ -12,7 +12,7 @@ import (
 
 	"github.com/grokify/sogo/database/kvs"
 
-	"github.com/agentplexus/omnillm"
+	"github.com/plexusone/omnillm"
 )
 
 // mockKVS is a simple in-memory implementation of the KVS interface for demonstration

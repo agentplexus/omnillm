@@ -3,7 +3,7 @@ package omnillm
 import (
 	"testing"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 func TestTokenEstimator_EstimateTokens(t *testing.T) {

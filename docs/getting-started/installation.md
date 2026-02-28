@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-go get github.com/agentplexus/omnillm
+go get github.com/plexusone/omnillm
 ```
 
 ## External Providers
@@ -16,7 +16,7 @@ Some providers with heavy SDK dependencies are available as separate modules:
 
 ```bash
 # AWS Bedrock (requires AWS SDK)
-go get github.com/agentplexus/omnillm-bedrock
+go get github.com/plexusone/omnillm-bedrock
 ```
 
 ## Environment Variables

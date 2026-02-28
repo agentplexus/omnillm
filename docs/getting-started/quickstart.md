@@ -10,7 +10,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
 )
 
 func main() {

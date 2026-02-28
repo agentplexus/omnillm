@@ -75,7 +75,7 @@ func TestAnthropicIntegration_Streaming(t *testing.T) {
 OmniLLM provides a mock KVS implementation for testing memory functionality:
 
 ```go
-import omnillmtest "github.com/agentplexus/omnillm/testing"
+import omnillmtest "github.com/plexusone/omnillm/testing"
 
 // Create mock KVS for testing
 mockKVS := omnillmtest.NewMockKVS()

@@ -10,7 +10,7 @@ import (
 var (
 	// Common errors
 	ErrUnsupportedProvider  = errors.New("unsupported provider")
-	ErrBedrockExternal      = errors.New("bedrock provider moved to github.com/agentplexus/omnillm-bedrock; use CustomProvider to inject it")
+	ErrBedrockExternal      = errors.New("bedrock provider moved to github.com/plexusone/omnillm-bedrock; use CustomProvider to inject it")
 	ErrInvalidConfiguration = errors.New("invalid configuration")
 	ErrNoProviders          = errors.New("at least one provider must be configured")
 	ErrEmptyAPIKey          = errors.New("API key cannot be empty")

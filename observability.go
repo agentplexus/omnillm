@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // LLMCallInfo provides metadata about the LLM call for observability

@@ -12,7 +12,7 @@ package myprovider
 
 import (
     "context"
-    "github.com/agentplexus/omnillm/provider"
+    "github.com/plexusone/omnillm/provider"
 )
 
 // HTTP Client
@@ -52,7 +52,7 @@ func (p *Provider) CreateChatCompletionStream(ctx context.Context, req *provider
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
     "github.com/yourname/omnillm-myprovider"
 )
 
@@ -97,7 +97,7 @@ Look at any built-in provider as a reference:
 
 - `providers/openai/` - OpenAI implementation
 - `providers/anthropic/` - Anthropic implementation
-- [omnillm-bedrock](https://github.com/agentplexus/omnillm-bedrock) - External provider example
+- [omnillm-bedrock](https://github.com/plexusone/omnillm-bedrock) - External provider example
 
 ## Benefits
 

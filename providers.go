@@ -3,12 +3,12 @@ package omnillm
 import (
 	"net/http"
 
-	"github.com/agentplexus/omnillm/provider"
-	"github.com/agentplexus/omnillm/providers/anthropic"
-	"github.com/agentplexus/omnillm/providers/gemini"
-	"github.com/agentplexus/omnillm/providers/ollama"
-	"github.com/agentplexus/omnillm/providers/openai"
-	"github.com/agentplexus/omnillm/providers/xai"
+	"github.com/plexusone/omnillm/provider"
+	"github.com/plexusone/omnillm/providers/anthropic"
+	"github.com/plexusone/omnillm/providers/gemini"
+	"github.com/plexusone/omnillm/providers/ollama"
+	"github.com/plexusone/omnillm/providers/openai"
+	"github.com/plexusone/omnillm/providers/xai"
 )
 
 // getHTTPClientFromProviderConfig returns the HTTPClient from config, or creates one with the

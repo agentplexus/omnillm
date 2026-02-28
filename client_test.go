@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/agentplexus/omnillm/provider"
-	mocktest "github.com/agentplexus/omnillm/testing"
+	"github.com/plexusone/omnillm/provider"
+	mocktest "github.com/plexusone/omnillm/testing"
 )
 
 // MockProvider implements provider.Provider for testing

@@ -1,6 +1,6 @@
 ---
 marp: true
-theme: agentplexus
+theme: plexusone
 paginate: true
 ---
 
@@ -155,7 +155,7 @@ client, _ := omnillm.NewClient(omnillm.ClientConfig{
 **External providers**: Optional modules for heavy dependencies
 
 ```go
-import "github.com/agentplexus/omnillm-bedrock"
+import "github.com/plexusone/omnillm-bedrock"
 
 bedrockProvider, _ := bedrock.NewProvider("us-east-1")
 client, _ := omnillm.NewClient(omnillm.ClientConfig{
@@ -273,7 +273,7 @@ Implement the `provider.Provider` interface:
 ```go
 package myprovider
 
-import "github.com/agentplexus/omnillm/provider"
+import "github.com/plexusone/omnillm/provider"
 
 type MyProvider struct { /* ... */ }
 
@@ -298,7 +298,7 @@ Use your provider without modifying the core library:
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
     "github.com/yourname/omnillm-myprovider"
 )
 
@@ -367,13 +367,13 @@ client, _ := omnillm.NewClient(omnillm.ClientConfig{
 # Installation
 
 ```bash
-go get github.com/agentplexus/omnillm
+go get github.com/plexusone/omnillm
 ```
 
 **Optional external providers:**
 
 ```bash
-go get github.com/agentplexus/omnillm-bedrock
+go get github.com/plexusone/omnillm-bedrock
 ```
 
 ---
@@ -386,7 +386,7 @@ package main
 import (
     "context"
     "fmt"
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
 )
 
 func main() {
@@ -441,7 +441,7 @@ go run examples/custom_provider/main.go
 **One SDK. All Providers. Zero Lock-in.**
 
 ```bash
-go get github.com/agentplexus/omnillm
+go get github.com/plexusone/omnillm
 ```
 
-github.com/agentplexus/omnillm
+github.com/plexusone/omnillm

@@ -14,7 +14,7 @@ This package provides a comprehensive catalog of LLM model identifiers and docum
 ### Import the Package
 
 ```go
-import "github.com/agentplexus/omnillm/models"
+import "github.com/plexusone/omnillm/models"
 ```
 
 ### Use Model Constants

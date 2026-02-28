@@ -10,7 +10,7 @@ import (
 
 	"github.com/grokify/sogo/database/kvs"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // CacheConfig configures response caching behavior

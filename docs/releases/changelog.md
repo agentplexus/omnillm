@@ -24,4 +24,4 @@ OmniLLM follows [Semantic Versioning](https://semver.org/):
 
 ## Full Changelog
 
-See [CHANGELOG.md](https://github.com/agentplexus/omnillm/blob/main/CHANGELOG.md) for the complete changelog in Keep a Changelog format.
+See [CHANGELOG.md](https://github.com/plexusone/omnillm/blob/main/CHANGELOG.md) for the complete changelog in Keep a Changelog format.

@@ -3,7 +3,7 @@ package omnillm
 import (
 	"fmt"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // TokenEstimator estimates token counts for messages before sending to the API.

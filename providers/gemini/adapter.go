@@ -5,7 +5,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // Provider represents the Gemini provider adapter

@@ -91,10 +91,10 @@ func (h *OTelHook) AfterResponse(ctx context.Context, info omnillm.LLMCallInfo, 
 
 ## OmniObserve Integration
 
-For full LLM observability, use [OmniObserve](https://github.com/agentplexus/omniobserve):
+For full LLM observability, use [OmniObserve](https://github.com/plexusone/omniobserve):
 
 ```go
-import "github.com/agentplexus/omniobserve/integrations/omnillm"
+import "github.com/plexusone/omniobserve/integrations/omnillm"
 
 // Create omnillm hook from omniobserve provider
 hook := omnillm.NewHook(omniobserveProvider)

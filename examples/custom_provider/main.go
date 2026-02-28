@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/agentplexus/omnillm"
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // Example of a 3rd party provider implementation following omnillm's internal pattern

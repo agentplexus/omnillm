@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/agentplexus/omnillm"
+	"github.com/plexusone/omnillm"
 )
 
 func main() {

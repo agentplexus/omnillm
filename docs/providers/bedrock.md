@@ -10,15 +10,15 @@ AWS Bedrock is available as an external module to avoid pulling AWS SDK dependen
 ## Installation
 
 ```bash
-go get github.com/agentplexus/omnillm-bedrock
+go get github.com/plexusone/omnillm-bedrock
 ```
 
 ## Configuration
 
 ```go
 import (
-    "github.com/agentplexus/omnillm"
-    "github.com/agentplexus/omnillm-bedrock"
+    "github.com/plexusone/omnillm"
+    "github.com/plexusone/omnillm-bedrock"
 )
 
 // Create the Bedrock provider
@@ -49,4 +49,4 @@ AWS SDK v2 adds 17+ transitive dependencies. By keeping Bedrock as an external m
 
 ## Source Code
 
-See [github.com/agentplexus/omnillm-bedrock](https://github.com/agentplexus/omnillm-bedrock) for the full implementation.
+See [github.com/plexusone/omnillm-bedrock](https://github.com/plexusone/omnillm-bedrock) for the full implementation.

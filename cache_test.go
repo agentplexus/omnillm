@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/agentplexus/omnillm/provider"
-	testutil "github.com/agentplexus/omnillm/testing"
+	"github.com/plexusone/omnillm/provider"
+	testutil "github.com/plexusone/omnillm/testing"
 )
 
 func TestCacheManager_SetAndGet(t *testing.T) {

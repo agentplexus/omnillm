@@ -18,7 +18,7 @@ Some providers with heavy SDK dependencies are available as separate modules:
 
 | Provider | Module | Why External |
 |----------|--------|--------------|
-| [AWS Bedrock](bedrock.md) | `github.com/agentplexus/omnillm-bedrock` | AWS SDK v2 adds 17+ transitive dependencies |
+| [AWS Bedrock](bedrock.md) | `github.com/plexusone/omnillm-bedrock` | AWS SDK v2 adds 17+ transitive dependencies |
 
 ## Multi-Provider Configuration
 

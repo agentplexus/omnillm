@@ -1,10 +1,20 @@
 {
   "irVersion": "1.0",
   "project": "omnillm",
-  "repository": "https://github.com/agentplexus/omnillm",
+  "repository": "https://github.com/plexusone/omnillm",
   "versioning": "semver",
   "commitConvention": "conventional",
   "releases": [
+    {
+      "version": "v0.13.0",
+      "date": "2026-02-28",
+      "highlights": [
+        { "description": "Organization rename from agentplexus to plexusone" }
+      ],
+      "changed": [
+        { "description": "**Breaking**: Go module path changed from `github.com/agentplexus/omnillm` to `github.com/plexusone/omnillm`" }
+      ]
+    },
     {
       "version": "v0.12.0",
       "date": "2026-02-22",
@@ -188,7 +198,7 @@
       "date": "2025-12-27",
       "changed": [
         {
-          "description": "Module renamed from `github.com/grokify/metallm` to `github.com/agentplexus/omnillm`",
+          "description": "Module renamed from `github.com/grokify/metallm` to `github.com/plexusone/omnillm`",
           "breaking": true,
           "commit": "89059fb"
         },

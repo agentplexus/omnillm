@@ -77,7 +77,7 @@ import (
     "log/slog"
     "os"
 
-    "github.com/agentplexus/omnillm"
+    "github.com/plexusone/omnillm"
 )
 
 logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{

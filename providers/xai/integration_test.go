@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/agentplexus/omnillm/provider"
+	"github.com/plexusone/omnillm/provider"
 )
 
 // TestXAIIntegration_ChatCompletion tests actual API calls

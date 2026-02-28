@@ -1,6 +1,6 @@
 package omnillm
 
-import "github.com/agentplexus/omnillm/provider"
+import "github.com/plexusone/omnillm/provider"
 
 // Type aliases for backward compatibility and convenience
 type Role = provider.Role
