@@ -12,7 +12,7 @@
         { "description": "Organization rename from agentplexus to plexusone" }
       ],
       "changed": [
-        { "description": "**Breaking**: Go module path changed from `github.com/agentplexus/omnillm` to `github.com/plexusone/omnillm`" }
+        { "description": "**Breaking**: Go module path changed from `github.com/agentplexus/omnillm` to `github.com/plexusone/omnillm`", "commit": "5837ee2" }
       ]
     },
     {
